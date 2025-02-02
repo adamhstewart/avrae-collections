@@ -228,5 +228,6 @@ else:
 	base += f''' -f "You couldn't find anything!|**DC {find_dc}**{nl}**{fskill}:** {find_check}"'''
 	base += f''' -footer "{ctx.prefix}hunting help | @CuratedPip"'''
 
+
 return base
 </drac2>
