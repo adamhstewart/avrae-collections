@@ -1,0 +1,57 @@
+<drac2>
+#Define variables for later use
+c = character()
+cs = character().skills
+args = &ARGS&
+parse = argparse(args)
+crime_bonus = ""
+
+
+# Process bonuses from args
+bonus = parse.get('b')
+if "-b" in args:
+	crime_bonus += f'+{bonus[0]}'
+
+## Get the svars
+dataSelect = load_json(get_svar("CrimeArgs", "{}"))
+dataSelect.update({'robbery': 'CrimeRobbery', 'forgery': 'CrimeForgery', 'impersonation': 'CrimeImpersonation'})
+svarName = dataSelect.get(args[0])
+crimedata = []
+defaultData = {'CrimeRobbery': '[{"crime": "Robbery of a struggling merchant", "payoff": 150, "investment": 15, "DC": 10}, {"crime": "Robbery of a prosperous merchant", "payoff": 250, "investment": 25, "DC": 15}, {"crime": "Robbery of a noble", "payoff": 500, "investment": 50, "DC": 20}, {"crime": "Robbery of one of the richest people in town", "payoff": 1000, "investment": 100, "DC": 25}]', 'CrimeForgery': '[{"crime": "Robbery of a struggling merchant", "payoff": 150, "investment": 15, "DC": 10}, {"crime": "Robbery of a prosperous merchant", "payoff": 250, "investment": 25, "DC": 15}, {"crime": "Robbery of a noble", "payoff": 500, "investment": 50, "DC": 20}, {"crime": "Robbery of one of the richest people in town", "payoff": 1000, "investment": 100, "DC": 25}]'}
+if len(dataSelect) > 0:
+	if args[0] in dataSelect.keys():
+		crimedata = load_json(get_svar(svarName, defaultData.get(svarName)).replace("crime","cr").replace("payoff","p").replace("investment","i").replace("DC","d"))
+
+# Load the crime data from args, some error handling
+if len(crimedata) == 0 or len(crimedata[0]) == 0:
+	err(f'''Seems like you forgot to include an argument to determine type of foraging, your server's bot gurus have disabled {args[0]} foraging, or you've used an invalid argument. Please contact them to correct this.''')
+
+## Get the better of the skill investigation or perception
+invest_percept = [cs.investigation, cs.perception]
+third_skill = max(invest_percept)
+
+
+# Roll the stealth check
+sbonus = cs.stealth
+sskill =  "Stealth"
+smc = (10 if c.csettings.get("talent", False) and sbonus.prof else None)
+stealth_string = sbonus.d20(smc) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
+stealth_check = vroll(find_string)
+
+base += f''' -f "You are sneaky!|**DC 10**{nl}**{sskill}:** {stealth_check}'''
+
+
+# top_three = sorted(arr, reverse=True)[:3]
+
+# Setup the embed
+
+## Build the embed.
+T = f"{name} does some {svarName}!"
+D = "Crime takes skill."
+
+base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}"'''
+base += f''' -f "You are sneaky!|**DC 10**{nl}**{sskill}:** {stealth_check}'''
+
+return base
+</drac2>
+
