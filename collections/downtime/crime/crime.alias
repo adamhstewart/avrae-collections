@@ -1,4 +1,5 @@
 <drac2>
+
 #Define variables for later use
 c = character()
 cs = character().skills
