@@ -6,7 +6,6 @@ args = &ARGS&
 parse = argparse(args)
 crime_bonus = ""
 
-
 # Process bonuses from args
 bonus = parse.get('b')
 if "-b" in args:
@@ -30,7 +29,6 @@ if len(crimedata) == 0 or len(crimedata[0]) == 0:
 invest_percept = [cs.investigation, cs.perception]
 third_skill = max(invest_percept)
 
-
 # Roll the stealth check
 sbonus = cs.stealth
 sskill =  "Stealth"
@@ -39,7 +37,6 @@ stealth_string = sbonus.d20(smc) + ("+1d4[guidance]" if parse.get("guidance") el
 stealth_check = vroll(find_string)
 
 base += f''' -f "You are sneaky!|**DC 10**{nl}**{sskill}:** {stealth_check}'''
-
 
 # top_three = sorted(arr, reverse=True)[:3]
 
@@ -51,7 +48,6 @@ D = "Crime takes skill."
 
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}"'''
 base += f''' -f "You are sneaky!|**DC 10**{nl}**{sskill}:** {stealth_check}'''
-
 
 return base
 </drac2>

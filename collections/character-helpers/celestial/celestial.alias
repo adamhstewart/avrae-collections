@@ -1,4 +1,5 @@
 <drac2>
+
 #Define variables for later use
 cc = "Celestial Revelation"
 rest = "You can’t transform again until you finish a Long Rest."
