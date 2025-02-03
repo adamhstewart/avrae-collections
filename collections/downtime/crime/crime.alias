@@ -47,19 +47,21 @@ def get_first_crime_by_dc(category, dc):
     return f"No crime found for DC {dc} in {category}."
 
 def get_crime_by_dc(crimedata, dc):
-    """Find the first crime description matching the given DC without using type or isinstance."""
+    """Find the first crime description matching the given DC, handling string-int conversion issues."""
 
     # Ensure crimedata is not empty
     if not crimedata or len(crimedata) == 0:
         return "Error: crimedata is empty or invalid."
 
-    # Iterate through each entry and safely extract values
+    # Iterate through crime data safely
     for crime_entry in crimedata:
         try:
-            if "d" in crime_entry and crime_entry["d"] == dc:
+            # Convert "d" (DC) value to integer for reliable comparison
+            entry_dc = int(crime_entry["d"])  # Ensure DC is an integer
+            if entry_dc == int(dc):  # Convert both to integers before comparing
                 return crime_entry.get("cr", "Crime description missing")
-        except:
-            pass  # Ignore any entries that are not valid dictionaries
+        except (ValueError, KeyError):
+            pass  # Ignore entries with missing or malformed "d"
 
     return f"No crime found for DC {dc}."
 
