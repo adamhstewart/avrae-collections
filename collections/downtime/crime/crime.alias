@@ -1,5 +1,4 @@
 <drac2>
-import json
 
 #Define variables for later use
 c = character()
@@ -24,7 +23,7 @@ def get_crimes_by_dc(category: str, dc: int):
         return f"Error: Category '{category}' not found."
 
     # Parse JSON data into a Python list
-    crime_list = json.loads(defaultData[category])
+    crime_list = load_json(defaultData[category])
 
     # Find all crimes that match the DC
     matching_crimes = [entry["crime"] for entry in crime_list if entry.get("DC") == dc]
