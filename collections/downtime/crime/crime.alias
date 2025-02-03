@@ -116,14 +116,14 @@ else:
 
 ## Get the final results.
 if success_count == 0:
-	success_message = f"You were caught in the act! You have been thrown in jail for {crime_dc} days and have a fine of {payoff}."
+	success_message = f"You were caught in the act! You have been thrown in jail for {crime_dc} days and have a fine of {payoff} GP."
 elif success_count == 1:
 	success_message = f"Your attempt failed, but you got away clean!"
 elif success_count == 2:
 	partial_payoff = payoff / 2
-	success_message = f"Your attempt was partly successful! You made off with {partial_payoff}."
+	success_message = f"Your attempt was partly successful! You made off with {int(partial_payoff)} GP."
 else:
-	success_message = f"Your attempt was a success! You made off with {payoff}."
+	success_message = f"Your attempt was a success! You made off with {payoff} GP."
 
 ## Build the embed.
 T = f"{name} is attempting the {crime_name}!"
@@ -133,7 +133,7 @@ base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}"'''
 base += f''' -f "**DC {crime_dc} {stealth_label}**{nl}{stealth_check}{nl}**{stealth_message}**"'''
 base += f''' -f "**DC {crime_dc} {deception_label}**{nl}{deception_check}{nl}**{deception_message}**"'''
 base += f''' -f "**DC {crime_dc} {third_skill_label}**{nl}{third_skill_check}{nl}**{third_skill_message}**"'''
-base += f''' -f "**{success_message}**"'''
+base += f''' -f "{success_message}"'''
 
 return base
 </drac2>
