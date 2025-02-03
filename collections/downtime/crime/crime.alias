@@ -15,7 +15,7 @@ if "-b" in args:
 	crime_bonus += f'+{bonus[0]}'
 
 # Process the attempted DC
-crime_dc = parse.get('dc')
+crime_dc = parse.get('dc')[0]
 
 def get_crimes_by_dc(category: str, dc: int):
     """Retrieve all crime descriptions that match a given DC in a specific category."""
