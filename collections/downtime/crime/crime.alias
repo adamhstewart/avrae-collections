@@ -79,7 +79,7 @@ if stealth_check.total >= crime_dc:
 	stealth_message = "**Success!**"
 
 else:
-stealth_message = "**Failure!**"
+	stealth_message = "**Failure!**"
 
 # Setup the embed
 
@@ -92,4 +92,3 @@ base += f''' -f "{stealth_message}|**DC {crime_dc}**{nl}**{stealth_label}:** {st
 
 return base
 </drac2>
-
