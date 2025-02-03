@@ -16,8 +16,6 @@ if "-b" in args:
 # Process the attempted DC
 crime_dc = parse.get('dc')
 
-if crime_dc = 10
-
 def get_crimes_by_dc(category: str, dc: int):
     """Retrieve all crime descriptions that match a given DC in a specific category."""
     if category not in defaultData:
@@ -30,7 +28,6 @@ def get_crimes_by_dc(category: str, dc: int):
     matching_crimes = [entry["crime"] for entry in crime_list if entry.get("DC") == dc]
 
     return matching_crimes if matching_crimes else f"No crimes found for DC {dc} in {category}."
-
 
 ## Get the svars
 dataSelect = load_json(get_svar("CrimeArgs", "{}"))
