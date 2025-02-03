@@ -78,7 +78,7 @@ stealth_check = vroll(stealth_string)
 # Setup the embed
 
 ## Build the embed.
-T = f"{name} does some {crimedata['cr']}!"
+T = f"{name} does some {crimedata}!"
 D = "Crime takes skill."
 
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}"'''
