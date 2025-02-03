@@ -34,7 +34,7 @@ third_skill = max(invest_percept)
 sbonus = cs.stealth
 sskill =  "Stealth"
 smc = (10 if c.csettings.get("talent", False) and sbonus.prof else None)
-stealth_string = sbonus.d20(smc) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
+stealth_string = sbonus.d20 + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
 stealth_check = vroll(stealth_string)
 
 # top_three = sorted(arr, reverse=True)[:3]
