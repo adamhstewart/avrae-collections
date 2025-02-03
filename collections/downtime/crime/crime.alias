@@ -15,7 +15,7 @@ if "-b" in args:
 	crime_bonus += f'+{bonus[0]}'
 
 # Process the attempted DC
-crime_dc = parse.last('dc')
+crime_dc = int(parse.last('dc'))
 
 # Define a function to get the data for a crime given the DC.
 def get_crime_by_dc(crimedata, dc):
@@ -29,7 +29,7 @@ def get_crime_by_dc(crimedata, dc):
         try:
             # Convert "d" (DC) value to integer for reliable comparison
             entry_dc = int(crime_entry["d"])  # Ensure DC is an integer
-            if entry_dc == int(dc):  # Convert both to integers before comparing
+            if entry_dc == dc:  # Convert both to integers before comparing
                 return [
                     crime_entry.get("cr", "Crime description missing"),
                     crime_entry.get("i", 0),  # Investment
