@@ -117,9 +117,9 @@ else:
 ## Get the final results.
 if success_count == 0:
 	net_payoff = payoff + investment
-	success_message = f"You were caught in the act! You have been thrown in jail for {crime_dc} days and have a fine of {payoff} GP. After your investment of {investment GP}, you net loss is {int(net_payoff)} GP."
+	success_message = f"You were caught in the act! You have been thrown in jail for {crime_dc} days and have a fine of {payoff} GP. After your investment of {investment} GP, your net loss is {int(net_payoff)} GP."
 elif success_count == 1:
-	success_message = f"Your attempt failed, but you got away clean! After your investment of {investment} GP, you net loss is {investment} GP."
+	success_message = f"Your attempt failed, but you got away clean! After your investment of {investment} GP, your net loss is {investment} GP."
 elif success_count == 2:
 	partial_payoff = payoff / 2
 	net_payoff = partial_payoff - investment
