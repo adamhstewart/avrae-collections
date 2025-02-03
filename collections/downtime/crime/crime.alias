@@ -17,37 +17,8 @@ if "-b" in args:
 # Process the attempted DC
 crime_dc = parse.last('dc')
 
-def get_crimes_by_dc(category: str, dc: int):
-    """Retrieve all crime descriptions that match a given DC in a specific category."""
-    if category not in defaultData:
-        return f"Error: Category '{category}' not found."
-
-    # Parse JSON data into a Python list
-    crime_list = load_json(get_svar(category, defaultData.get(category)))
-
-    # Find all crimes that match the DC
-    matching_crimes = [entry["crime"] for entry in crime_list if entry.get("DC") == dc]
-
-    return matching_crimes if matching_crimes else f"No crimes found for DC {dc} in {category}."
-
-def get_first_crime_by_dc(category, dc):
-    """Retrieve the first crime description that matches a given DC in a specific category."""
-
-    if category not in defaultData:
-        return f"Error: Category '{category}' not found."
-
-    # Use load_json instead of json.loads
-    crime_list = load_json(get_svar(category, defaultData.get(category)))
-
-    # Find the first crime that matches the DC
-    for entry in crime_list:
-        if entry.get("DC") == dc:
-            return entry["crime"]  # Return the first matching crime as a string
-
-    return f"No crime found for DC {dc} in {category}."
-
+# Define a function to get the data for a crime given the DC.
 def get_crime_by_dc(crimedata, dc):
-    """Find the first crime description matching the given DC, handling string-int conversion issues."""
 
     # Ensure crimedata is not empty
     if not crimedata or len(crimedata) == 0:
@@ -59,12 +30,15 @@ def get_crime_by_dc(crimedata, dc):
             # Convert "d" (DC) value to integer for reliable comparison
             entry_dc = int(crime_entry["d"])  # Ensure DC is an integer
             if entry_dc == int(dc):  # Convert both to integers before comparing
-                return crime_entry.get("cr", "Crime description missing")
+                return [
+                    crime_entry.get("cr", "Crime description missing"),
+                    crime_entry.get("i", 0),  # Investment
+                    crime_entry.get("p", 0)   # Payoff
+                ]
         except (ValueError, KeyError):
             pass  # Ignore entries with missing or malformed "d"
 
     return f"No crime found for DC {dc}."
-
 
 ## Get the svars
 dataSelect = load_json(get_svar("CrimeArgs", "{}"))
@@ -80,7 +54,14 @@ if len(dataSelect) > 0:
 if len(crimedata) == 0 or len(crimedata[0]) == 0:
 	err(f'''Seems like you forgot to include an argument to determine type of foraging, your server's bot gurus have disabled {args[0]} foraging, or you've used an invalid argument. Please contact them to correct this.''')
 
-crime_name = get_crime_by_dc(crimedata, crime_dc)
+crime_details = get_crime_by_dc(crimedata, crime_dc)
+
+if crime_details and len(crime_details) == 3:
+    # Unpack the list
+    crime_name = crime_details[0]
+    investment = crime_details[1]
+    payoff = crime_details[2]
+
 
 ## Get the better of the skill investigation or perception
 invest_percept = [cs.investigation, cs.perception]
@@ -98,8 +79,8 @@ stealth_check = vroll(stealth_string)
 # Setup the embed
 
 ## Build the embed.
-T = f"{name} does some {crime_name}!"
-D = "Crime takes skill."
+T = f"{name} is attempting {crime_name}!"
+D = f"The investment is {investment} and the potential payoff is {payoff}."
 
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}"'''
 base += f''' -f "You are sneaky!|**DC {crime_dc}**{nl}**{stealth_label}:** {stealth_check}"'''
