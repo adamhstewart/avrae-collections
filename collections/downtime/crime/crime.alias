@@ -6,11 +6,31 @@ args = &ARGS&
 parse = argparse(args)
 crime_bonus = ""
 nl = "\n"
+rr_num = c.csettings.get("reroll", None)
 
 # Process bonuses from args
 bonus = parse.get('b')
 if "-b" in args:
 	crime_bonus += f'+{bonus[0]}'
+
+# Process the attempted DC
+crime_dc = parse.get('dc')
+
+if crime_dc = 10
+
+def get_crimes_by_dc(category: str, dc: int):
+    """Retrieve all crime descriptions that match a given DC in a specific category."""
+    if category not in defaultData:
+        return f"Error: Category '{category}' not found."
+
+    # Parse JSON data into a Python list
+    crime_list = json.loads(defaultData[category])
+
+    # Find all crimes that match the DC
+    matching_crimes = [entry["crime"] for entry in crime_list if entry.get("DC") == dc]
+
+    return matching_crimes if matching_crimes else f"No crimes found for DC {dc} in {category}."
+
 
 ## Get the svars
 dataSelect = load_json(get_svar("CrimeArgs", "{}"))
@@ -26,15 +46,17 @@ if len(dataSelect) > 0:
 if len(crimedata) == 0 or len(crimedata[0]) == 0:
 	err(f'''Seems like you forgot to include an argument to determine type of foraging, your server's bot gurus have disabled {args[0]} foraging, or you've used an invalid argument. Please contact them to correct this.''')
 
+crimes = get_crimes_by_dc(svarName, crime_dc)
+
 ## Get the better of the skill investigation or perception
 invest_percept = [cs.investigation, cs.perception]
 third_skill = max(invest_percept)
 
 # Roll the stealth check
-sbonus = cs.stealth
-sskill =  "Stealth"
-smc = (10 if c.csettings.get("talent", False) and sbonus.prof else None)
-stealth_string = sbonus.d20() + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
+stealth_bonus = cs.stealth
+stealth_label =  "Stealth"
+stealth_min = (10 if c.csettings.get("talent", False) and stealth_bonus.prof else None)
+stealth_string = stealth_bonus.d20(rr_num, stealth_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
 stealth_check = vroll(stealth_string)
 
 # top_three = sorted(arr, reverse=True)[:3]
@@ -42,7 +64,7 @@ stealth_check = vroll(stealth_string)
 # Setup the embed
 
 ## Build the embed.
-T = f"{name} does some {svarName}!"
+T = f"{name} does some {crimes[0]}!"
 D = "Crime takes skill."
 
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}"'''
