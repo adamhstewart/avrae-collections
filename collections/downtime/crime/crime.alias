@@ -45,6 +45,7 @@ if len(crimedata) == 0 or len(crimedata[0]) == 0:
 	err(f'''Seems like you forgot to include an argument to determine type of foraging, your server's bot gurus have disabled {args[0]} foraging, or you've used an invalid argument. Please contact them to correct this.''')
 
 crimes = get_crimes_by_dc(svarName, crime_dc)
+crime = crimes[0]
 
 ## Get the better of the skill investigation or perception
 invest_percept = [cs.investigation, cs.perception]
@@ -62,7 +63,7 @@ stealth_check = vroll(stealth_string)
 # Setup the embed
 
 ## Build the embed.
-T = f"{name} does some {crimes[0]}!"
+T = f"{name} does some {crime}!"
 D = "Crime takes skill."
 
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}"'''
