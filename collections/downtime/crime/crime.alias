@@ -1,4 +1,6 @@
 <drac2>
+import json
+
 #Define variables for later use
 c = character()
 cs = character().skills
