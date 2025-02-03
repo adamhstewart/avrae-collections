@@ -45,7 +45,7 @@ dataSelect = load_json(get_svar("CrimeArgs", "{}"))
 dataSelect.update({'robbery': 'CrimeRobbery', 'forgery': 'CrimeForgery', 'impersonation': 'CrimeImpersonation'})
 svarName = dataSelect.get(args[0])
 crimedata = []
-defaultData = {'CrimeRobbery': '[{"crime": "Robbery of a struggling merchant", "payoff": 150, "investment": 15, "DC": 10}, {"crime": "Robbery of a prosperous merchant", "payoff": 250, "investment": 25, "DC": 15}, {"crime": "Robbery of a noble", "payoff": 500, "investment": 50, "DC": 20}, {"crime": "Robbery of one of the richest people in town", "payoff": 1000, "investment": 100, "DC": 25}]', 'CrimeForgery': '[{"crime": "Robbery of a struggling merchant", "payoff": 150, "investment": 15, "DC": 10}, {"crime": "Robbery of a prosperous merchant", "payoff": 250, "investment": 25, "DC": 15}, {"crime": "Robbery of a noble", "payoff": 500, "investment": 50, "DC": 20}, {"crime": "Robbery of one of the richest people in town", "payoff": 1000, "investment": 100, "DC": 25}]'}
+defaultData = {'CrimeRobbery': '[{"crime": "robbery of a struggling merchant", "payoff": 150, "investment": 15, "DC": 10}, {"crime": "robbery of a prosperous merchant", "payoff": 250, "investment": 25, "DC": 15}, {"crime": "robbery of a noble", "payoff": 500, "investment": 50, "DC": 20}, {"crime": "robbery of one of the richest people in town", "payoff": 1000, "investment": 100, "DC": 25}]', 'CrimeForgery': '[{"crime": "Robbery of a struggling merchant", "payoff": 150, "investment": 15, "DC": 10}, {"crime": "Robbery of a prosperous merchant", "payoff": 250, "investment": 25, "DC": 15}, {"crime": "Robbery of a noble", "payoff": 500, "investment": 50, "DC": 20}, {"crime": "Robbery of one of the richest people in town", "payoff": 1000, "investment": 100, "DC": 25}]'}
 if len(dataSelect) > 0:
 	if args[0] in dataSelect.keys():
 		crimedata = load_json(get_svar(svarName, defaultData.get(svarName)).replace("crime","cr").replace("payoff","p").replace("investment","i").replace("DC","d"))
@@ -74,16 +74,21 @@ stealth_min = (10 if c.csettings.get("talent", False) and stealth_bonus.prof els
 stealth_string = stealth_bonus.d20(rr_num, stealth_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
 stealth_check = vroll(stealth_string)
 
-# top_three = sorted(arr, reverse=True)[:3]
+## Check for stealth success.
+if stealth_check.total >= crime_dc:
+	stealth_message = "**Success!**"
+
+else:
+stealth_message = "**Failure!**"
 
 # Setup the embed
 
 ## Build the embed.
-T = f"{name} is attempting {crime_name}!"
-D = f"The investment is {investment} and the potential payoff is {payoff}."
+T = f"{name} is attempting the {crime_name}!"
+D = f"The investment is {investment}GP and the potential payoff is {payoff}GP."
 
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}"'''
-base += f''' -f "You are sneaky!|**DC {crime_dc}**{nl}**{stealth_label}:** {stealth_check}"'''
+base += f''' -f "{stealth_message}|**DC {crime_dc}**{nl}**{stealth_label}:** {stealth_check}"'''
 
 return base
 </drac2>
