@@ -46,6 +46,17 @@ def get_first_crime_by_dc(category, dc):
 
     return f"No crime found for DC {dc} in {category}."
 
+def get_crime_by_dc(crimedata, dc):
+    """Find the first crime description matching the given DC, with error handling."""
+    if not isinstance(crimedata, list) or len(crimedata) == 0:
+        return "Error: crimedata is empty or invalid."
+
+    for crime_entry in crimedata:
+        if isinstance(crime_entry, dict) and crime_entry.get("d") == dc:
+            return crime_entry.get("cr", "Crime description missing")
+
+    return f"No crime found for DC {dc}."
+
 ## Get the svars
 dataSelect = load_json(get_svar("CrimeArgs", "{}"))
 dataSelect.update({'robbery': 'CrimeRobbery', 'forgery': 'CrimeForgery', 'impersonation': 'CrimeImpersonation'})
@@ -60,7 +71,7 @@ if len(dataSelect) > 0:
 if len(crimedata) == 0 or len(crimedata[0]) == 0:
 	err(f'''Seems like you forgot to include an argument to determine type of foraging, your server's bot gurus have disabled {args[0]} foraging, or you've used an invalid argument. Please contact them to correct this.''')
 
-crime = get_first_crime_by_dc(svarName, crime_dc)
+crime_name = get_crime_by_dc(crimedata, crime_dc)
 
 ## Get the better of the skill investigation or perception
 invest_percept = [cs.investigation, cs.perception]
@@ -78,7 +89,7 @@ stealth_check = vroll(stealth_string)
 # Setup the embed
 
 ## Build the embed.
-T = f"{name} does some {crimedata}!"
+T = f"{name} does some {crime_name}!"
 D = "Crime takes skill."
 
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}"'''
