@@ -51,23 +51,19 @@ if len(dataSelect) > 0:
 	if args[0] in dataSelect.keys():
 		crimedata = load_json(get_svar(svarName, defaultData.get(svarName)).replace("crime","cr").replace("payoff","p").replace("investment","i").replace("DC","d"))
 
-# Load the crime data from args, some error handling
+## Load the crime data from args, some error handling
 if len(crimedata) == 0 or len(crimedata[0]) == 0:
 	err(f'''Seems like you forgot to include an argument to determine type of foraging, your server's bot gurus have disabled {args[0]} foraging, or you've used an invalid argument. Please contact them to correct this.''')
 
 crime_details = get_crime_by_dc(crimedata, crime_dc)
 
 if crime_details and len(crime_details) == 3:
-    # Unpack the list
+    ## Unpack the list
     crime_name = crime_details[0]
     investment = crime_details[1]
     payoff = crime_details[2]
 
-## Get the better of the skill investigation or perception
-invest_percept = [cs.investigation, cs.perception]
-third_skill = max(invest_percept)
-
-# Roll the stealth check
+## Roll the stealth check
 stealth_bonus = cs.stealth
 stealth_label =  "Stealth"
 stealth_min = (10 if c.csettings.get("talent", False) and stealth_bonus.prof else None)
@@ -82,14 +78,14 @@ if stealth_check.total >= crime_dc:
 else:
 	stealth_message = "**Failure!**"
 
-# Roll the deception check
+## Roll the deception check
 deception_bonus = cs.deception
 deception_label =  "Deception"
 deception_min = (10 if c.csettings.get("talent", False) and deception_bonus.prof else None)
 deception_string = deception_bonus.d20(rr_num, deception_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
 deception_check = vroll(deception_string)
 
-## Check for stealth success.
+## Check for deception success.
 if deception_check.total >= crime_dc:
 	deception_message = "**Success!**"
 	success_count += 1
@@ -97,13 +93,35 @@ if deception_check.total >= crime_dc:
 else:
 	deception_message = "**Failure!**"
 
+## Roll the third check
+## Get the better of the skill investigation or perception
+invest_percept = [cs.investigation, cs.perception]
+third_skill_bonus = max(invest_percept)
+if cs.investigation >= cs.perception:
+	third_skill_label = "Investigation"
+else:
+	third_skill_label = "Perception"
+
+third_skill_min = (10 if c.csettings.get("talent", False) and third_skill_bonus.prof else None)
+third_skill_string = third_skill_bonus.d20(rr_num, third_skill_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
+third_skill_check = vroll(third_skill_string)
+
+## Check for deception success.
+if third_skill_check.total >= crime_dc:
+	third_skill_message = "**Success!**"
+	success_count += 1
+
+else:
+	third_skill_message = "**Failure!**"
+
 ## Build the embed.
 T = f"{name} is attempting the {crime_name}!"
 D = f"The investment is {investment}GP and the potential payoff is {payoff}GP."
 
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}"'''
-base += f''' -f "{stealth_message}|**DC {crime_dc}**{nl}**{stealth_label}:** {stealth_check}"'''
-base += f''' -f "{deception_message}|**DC {crime_dc}**{nl}**{deception_label}:** {deception_check}"'''
+base += f''' -f "{stealth_message}|**DC{nl}{crime_dc}**{nl}**{stealth_label}:** {stealth_check}"'''
+base += f''' -f "{deception_message}|**DC{nl}{crime_dc}**{nl}**{deception_label}:** {deception_check}"'''
+base += f''' -f "{third_skill_message}|**DC{nl}{crime_dc}**{nl}**{third_skill_label}:** {third_skill_check}"'''
 
 return base
 </drac2>
