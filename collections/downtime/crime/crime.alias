@@ -8,6 +8,7 @@ parse = argparse(args)
 crime_bonus = ""
 nl = "\n"
 rr_num = c.csettings.get("reroll", None)
+success_count = 0
 
 # Process bonuses from args
 bonus = parse.get('b')
@@ -62,7 +63,6 @@ if crime_details and len(crime_details) == 3:
     investment = crime_details[1]
     payoff = crime_details[2]
 
-
 ## Get the better of the skill investigation or perception
 invest_percept = [cs.investigation, cs.perception]
 third_skill = max(invest_percept)
@@ -77,11 +77,25 @@ stealth_check = vroll(stealth_string)
 ## Check for stealth success.
 if stealth_check.total >= crime_dc:
 	stealth_message = "**Success!**"
+	success_count += 1
 
 else:
 	stealth_message = "**Failure!**"
 
-# Setup the embed
+# Roll the deception check
+deception_bonus = cs.deception
+deception_label =  "Deception"
+deception_min = (10 if c.csettings.get("talent", False) and deception_bonus.prof else None)
+deception_string = deception_bonus.d20(rr_num, deception_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
+deception_check = vroll(deception_string)
+
+## Check for stealth success.
+if deception_check.total >= crime_dc:
+	deception_message = "**Success!**"
+	success_count += 1
+
+else:
+	deception_message = "**Failure!**"
 
 ## Build the embed.
 T = f"{name} is attempting the {crime_name}!"
@@ -89,6 +103,7 @@ D = f"The investment is {investment}GP and the potential payoff is {payoff}GP."
 
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}"'''
 base += f''' -f "{stealth_message}|**DC {crime_dc}**{nl}**{stealth_label}:** {stealth_check}"'''
+base += f''' -f "{deception_message}|**DC {crime_dc}**{nl}**{deception_label}:** {deception_check}"'''
 
 return base
 </drac2>
