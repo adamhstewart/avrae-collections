@@ -47,19 +47,22 @@ def get_first_crime_by_dc(category, dc):
     return f"No crime found for DC {dc} in {category}."
 
 def get_crime_by_dc(crimedata, dc):
-    """Find the first crime description matching the given DC, without using isinstance."""
+    """Find the first crime description matching the given DC without using type or isinstance."""
 
-    # Ensure crimedata is a valid list with data
+    # Ensure crimedata is not empty
     if not crimedata or len(crimedata) == 0:
         return "Error: crimedata is empty or invalid."
 
-    # Iterate through crime entries
+    # Iterate through each entry and safely extract values
     for crime_entry in crimedata:
-        # Check if crime_entry is a dictionary using a safe approach
-        if type(crime_entry) == dict and "d" in crime_entry and crime_entry["d"] == dc:
-            return crime_entry.get("cr", "Crime description missing")
+        try:
+            if "d" in crime_entry and crime_entry["d"] == dc:
+                return crime_entry.get("cr", "Crime description missing")
+        except:
+            pass  # Ignore any entries that are not valid dictionaries
 
     return f"No crime found for DC {dc}."
+
 
 ## Get the svars
 dataSelect = load_json(get_svar("CrimeArgs", "{}"))
