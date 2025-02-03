@@ -116,14 +116,17 @@ else:
 
 ## Get the final results.
 if success_count == 0:
-	success_message = f"You were caught in the act! You have been thrown in jail for {crime_dc} days and have a fine of {payoff} GP."
+	net_payoff = payoff + investment
+	success_message = f"You were caught in the act! You have been thrown in jail for {crime_dc} days and have a fine of {payoff} GP. After your investment of {investment GP}, you net loss is {int(net_payoff)} GP."
 elif success_count == 1:
-	success_message = f"Your attempt failed, but you got away clean!"
+	success_message = f"Your attempt failed, but you got away clean! After your investment of {investment} GP, you net loss is {investment} GP."
 elif success_count == 2:
 	partial_payoff = payoff / 2
-	success_message = f"Your attempt was partly successful! You made off with {int(partial_payoff)} GP."
+	net_payoff = partial_payoff - investment
+	success_message = f"Your attempt was partly successful! You made off with {int(partial_payoff)} GP. After your investment of {investment GP}, you net gain is {int(net_payoff)} GP."
 else:
-	success_message = f"Your attempt was a success! You made off with {payoff} GP."
+	net_payoff = payoff - investment
+	success_message = f"Your attempt was a success! You made off with {payoff} GP. After and investment of {investment GP}, you net gain is {int(net_payoff)} GP."
 
 ## Build the embed.
 T = f"{name} is attempting the {crime_name}!"
