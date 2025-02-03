@@ -5,6 +5,7 @@ cs = character().skills
 args = &ARGS&
 parse = argparse(args)
 crime_bonus = ""
+nl = "\n"
 
 # Process bonuses from args
 bonus = parse.get('b')
