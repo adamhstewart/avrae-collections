@@ -67,7 +67,7 @@ T = f"{name} does some {crime}!"
 D = "Crime takes skill."
 
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}"'''
-base += f''' -f "You are sneaky!|**DC 10**{nl}**{stealth_label}:** {stealth_check}"'''
+base += f''' -f "You are sneaky!|**DC {crime_dc}**{nl}**{stealth_label}:** {stealth_check}"'''
 
 return base
 </drac2>
