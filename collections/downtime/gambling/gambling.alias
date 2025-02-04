@@ -1,0 +1,157 @@
+<drac2>
+
+#Define variables for later use
+c = character()
+cs = character().skills
+args = &ARGS&
+parse = argparse(args)
+gambling_bonus = ""
+nl = "\n"
+rr_num = c.csettings.get("reroll", None)
+success_count = 0
+
+# Process bonuses from args
+bonus = parse.get('b')
+if "-b" in args:
+	gambling_bonus += f'+{bonus[0]}'
+
+## Get the wager
+if args[0].isdigit():
+    wager = int(args[0])
+else:
+    err(f'''{args[0]} is not a valid wager.''')
+
+## Start the embed.
+T = f"{name} is Gambling!"
+D = f"The investment is {investment} GP and the potential payoff is {payoff} GP."
+base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}"'''
+
+## Get insight and Deception skills.
+insight_bonus = cs.insight
+deception_bonus = cs.deception
+intimidation_bonus = cs.intimidation
+
+## Create a dict mapping variable names to values.
+skills = {
+	"insight_bonus": insight_bonus,
+	"deception_bonus": deception_bonus,
+	"intimidation_bonus": intimidation_bonus
+}
+
+## Find the key (variable name) with the lowest value.
+lowest_skill_name = min(skills, key=skills.get)
+
+## Process the tool argument.
+if "dice" in args:
+	tool_bonus = cs.dexterity
+	tool_label = "Dice Set"
+elif "cards" in args:
+	tool_bonus = cs.charisma
+	tool_label = "Playing Card Set"
+elif "chess" in args::
+	tool_bonus = cs.intelligence
+	tool_label = "Dragonchess Set"
+elif "ante" in args::
+	tool_bonus = cs.charisma
+	tool_label = "Three-Dragon Ante Set"
+
+if tool_bonus:
+	## Remove the lowest skill bonus
+	skills.pop(lowest_skill_name, None)
+
+	## Add the tool bonus to the dictionary
+	skills["tool_bonus"] = tool_bonus
+
+	## Roll the tools check
+	tool_dc_roll = vroll("5+2d10")
+	tool_dc = tool_dc_roll.total
+	tool_min = (10 if c.csettings.get("talent", False) else None)
+	tool_string = tool_bonus.d20(rr_num, tool_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + f"+{proficiencyBonus or 0}"
+	tool_check = vroll(tool_string)
+
+	## Check for tool success.
+	if tool_check.total >= tool_dc:
+		tool_message = "Success!"
+		success_count += 1
+	else:
+		tool_message = "Failure!"
+
+	## Provide the embed message.
+	base += f''' -f "**DC {tool_dc} {tool_label}**{nl}{tool_check}{nl}**{tool_message}**"'''
+
+
+if "insight_bonus" in skills:
+	## Roll the insight check
+	insight_label =  "insight"
+	insight_min = (10 if c.csettings.get("talent", False) and insight_bonus.prof else None)
+	insight_string = insight_bonus.d20(rr_num, insight_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + gambling_bonus
+	insight_check = vroll(insight_string)
+
+	## Check for insight success.
+	insight_dc_roll = vroll("5+2d10")
+	insight_dc = insight_dc_roll.total
+	if insight_check.total >= insight_dc:
+		insight_message = "Success!"
+		success_count += 1
+	else:
+		insight_message = "Failure!"
+
+	## Provide the embed message.
+	base += f''' -f "**DC {insight_dc} {insight_label}**{nl}{insight_check}{nl}**{insight_message}**"'''
+
+if "deception_bonus" in skills:
+	## Roll the deception check
+	deception_label =  "Deception"
+	deception_min = (10 if c.csettings.get("talent", False) and deception_bonus.prof else None)
+	deception_string = deception_bonus.d20(rr_num, deception_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + gambling_bonus
+	deception_check = vroll(deception_string)
+
+	## Check for deception success.
+	deception_dc_roll = vroll("5+2d10")
+	deception_dc = deception_dc_roll.total
+	if deception_check.total >= crime_dc:
+		deception_message = "Success!"
+		success_count += 1
+	else:
+		deception_message = "Failure!"
+
+	#Provide the embed message.
+	base += f''' -f "**DC {deception_dc} {deception_label}**{nl}{deception_check}{nl}**{deception_message}**"'''
+
+if "intimidation_bonus" in skills:
+	## Roll the third check
+	intimidation_min = (10 if c.csettings.get("talent", False) and intimidation_bonus.prof else None)
+	intimidation_string = intimidation_bonus.d20(rr_num, intimidation_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + gambling_bonus
+	intimidation_check = vroll(intimidation_string)
+
+	## Check for third skill success.
+	intimidation_dc_roll = vroll("5+2d10")
+	intimidation_dc = intimidation_dc_roll.total
+	if intimidation_check.total >= intimidation_dc:
+		intimidation_message = "Success!"
+		success_count += 1
+	else:
+		intimidation_message = "Failure!"
+
+	#Provide the embed message.
+	base += f''' -f "**DC {intimidation_dc} {intimidation_label}**{nl}{intimidation_check}{nl}**{intimidation_message}**"'''
+
+## Get the final results.
+if success_count == 0:
+	net_payoff = wager * 2
+	success_message = f"You lost your wager of {wager} GP and accrued a debt of {wager} GP. Your net loss is {int(net_payoff)} GP."
+elif success_count == 1:
+	net_payoff = wager / 2
+	success_message = f"You lost half of your wager of {wager} GP, your net loss is {int(net_payoff)} GP."
+elif success_count == 2:
+	net_payoff = wager / 2
+	success_message = f"You won half of your wager of {wager} GP! You made off with {int(net_payoff)} GP."
+else:
+	net_payoff = wager
+	success_message = f"You won your full wager of {wager} GP! You made off with {net_payoff} GP."
+
+#Provide the embed message.
+base += f''' -f "{success_message}"'''
+
+return base
+</drac2>
