@@ -63,6 +63,11 @@ if crime_details and len(crime_details) == 3:
     investment = crime_details[1]
     payoff = crime_details[2]
 
+## Start the embed.
+T = f"{name} is attempting the {crime_name}!"
+D = f"The investment is {investment} GP and the potential payoff is {payoff} GP."
+base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}"'''
+
 ## Get Stealth and Deception skills.
 stealth_bonus = cs.stealth
 deception_bonus = cs.deception
@@ -103,6 +108,17 @@ if "tool" in args:
 	tool_string = tool_bonus.d20(rr_num, tool_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
 	tool_check = vroll(tool_string)
 
+	## Check for tool success.
+	if tool_check.total >= crime_dc:
+		tool_message = "Success!"
+		success_count += 1
+	else:
+		tool_message = "Failure!"
+
+	## Provide the embed message.
+	base += f''' -f "**DC {crime_dc} {tool_label}**{nl}{tool_check}{nl}**{tool_message}**"'''
+
+
 if lowest_skill_name != "stealth_bonus" and "tool" in args:
 	## Roll the stealth check
 	stealth_label =  "Stealth"
@@ -116,6 +132,9 @@ if lowest_skill_name != "stealth_bonus" and "tool" in args:
 		success_count += 1
 	else:
 		stealth_message = "Failure!"
+
+	## Provide the embed message.
+	base += f''' -f "**DC {crime_dc} {stealth_label}**{nl}{stealth_check}{nl}**{stealth_message}**"'''
 
 if lowest_skill_name != "deception_bonus" and "tool" in args:
 	## Roll the deception check
@@ -131,18 +150,24 @@ if lowest_skill_name != "deception_bonus" and "tool" in args:
 	else:
 		deception_message = "Failure!"
 
+	#Provide the embed message.
+	base += f''' -f "**DC {crime_dc} {deception_label}**{nl}{deception_check}{nl}**{deception_message}**"'''
+
 if lowest_skill_name != "third_skill_bonus" and "tool" in args:
 	## Roll the third check
 	third_skill_min = (10 if c.csettings.get("talent", False) and third_skill_bonus.prof else None)
 	third_skill_string = third_skill_bonus.d20(rr_num, third_skill_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
 	third_skill_check = vroll(third_skill_string)
 
-	## Check for deception success.
+	## Check for third skill success.
 	if third_skill_check.total >= crime_dc:
 		third_skill_message = "Success!"
 		success_count += 1
 	else:
 		third_skill_message = "Failure!"
+
+	#Provide the embed message.
+	base += f''' -f "**DC {crime_dc} {third_skill_label}**{nl}{third_skill_check}{nl}**{third_skill_message}**"'''
 
 ## Get the final results.
 if success_count == 0:
@@ -158,14 +183,7 @@ else:
 	net_payoff = payoff - investment
 	success_message = f"Your attempt was a success! You made off with {payoff} GP. After and investment of {investment} GP, your net gain is {int(net_payoff)} GP."
 
-## Build the embed.
-T = f"{name} is attempting the {crime_name}!"
-D = f"The investment is {investment} GP and the potential payoff is {payoff} GP."
-
-base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}"'''
-base += f''' -f "**DC {crime_dc} {stealth_label}**{nl}{stealth_check}{nl}**{stealth_message}**"'''
-base += f''' -f "**DC {crime_dc} {deception_label}**{nl}{deception_check}{nl}**{deception_message}**"'''
-base += f''' -f "**DC {crime_dc} {third_skill_label}**{nl}{third_skill_check}{nl}**{third_skill_message}**"'''
+#Provide the embed message.
 base += f''' -f "{success_message}"'''
 
 return base
