@@ -21,25 +21,25 @@ crime_dc = int(parse.last('dc'))
 # Define a function to get the data for a crime given the DC.
 def get_crime_by_dc(crimedata, dc):
 
-    # Ensure crimedata is not empty
-    if not crimedata or len(crimedata) == 0:
-        return "Error: crimedata is empty or invalid."
+	# Ensure crimedata is not empty
+	if not crimedata or len(crimedata) == 0:
+		return "Error: crimedata is empty or invalid."
 
-    # Iterate through crime data safely
-    for crime_entry in crimedata:
-        try:
-            # Convert "d" (DC) value to integer for reliable comparison
-            entry_dc = int(crime_entry["d"])  # Ensure DC is an integer
-            if entry_dc == dc:  # Convert both to integers before comparing
-                return [
-                    crime_entry.get("cr", "Crime description missing"),
-                    crime_entry.get("i", 0),  # Investment
-                    crime_entry.get("p", 0)   # Payoff
-                ]
-        except (ValueError, KeyError):
-            pass  # Ignore entries with missing or malformed "d"
+	# Iterate through crime data safely
+	for crime_entry in crimedata:
+		try:
+			# Convert "d" (DC) value to integer for reliable comparison
+			entry_dc = int(crime_entry["d"])  # Ensure DC is an integer
+			if entry_dc == dc:  # Convert both to integers before comparing
+				return [
+					crime_entry.get("cr", "Crime description missing"),
+					crime_entry.get("i", 0),  # Investment
+					crime_entry.get("p", 0)   # Payoff
+				]
+		except (ValueError, KeyError):
+			pass  # Ignore entries with missing or malformed "d"
 
-    return f"No crime found for DC {dc}."
+	return f"No crime found for DC {dc}."
 
 ## Get the svars
 dataSelect = load_json(get_svar("CrimeArgs", "{}"))
@@ -58,10 +58,10 @@ if len(crimedata) == 0 or len(crimedata[0]) == 0:
 crime_details = get_crime_by_dc(crimedata, crime_dc)
 
 if crime_details and len(crime_details) == 3:
-    ## Unpack the list
-    crime_name = crime_details[0]
-    investment = crime_details[1]
-    payoff = crime_details[2]
+	## Unpack the list
+	crime_name = crime_details[0]
+	investment = crime_details[1]
+	payoff = crime_details[2]
 
 ## Start the embed.
 T = f"{name} is attempting the {crime_name}!"
@@ -83,9 +83,9 @@ else:
 
 ## Create a dict mapping variable names to values.
 skills = {
-    "stealth_bonus": stealth_bonus,
-    "deception_bonus": deception_bonus,
-    "third_skill_bonus": third_skill_bonus
+	"stealth_bonus": stealth_bonus,
+	"deception_bonus": deception_bonus,
+	"third_skill_bonus": third_skill_bonus
 }
 
 ## Find the key (variable name) with the lowest value.
@@ -107,11 +107,11 @@ if "tool" in args:
 	skills.pop(lowest_skill_name, None)
 
 	## Add the tool bonus to the dictionary
-    skills["tool_bonus"] = tool_bonus
+	skills["tool_bonus"] = tool_bonus
 
 	## Roll the tools check
 	tool_min = (10 if c.csettings.get("talent", False) else None)
-	tool_string = tool_bonus.d20(rr_num, tool_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
+	tool_string = tool_bonus.d20(rr_num, tool_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus + proficiencyBonus
 	tool_check = vroll(tool_string)
 
 	## Check for tool success.
