@@ -48,10 +48,10 @@ if "dice" in args:
 elif "cards" in args:
 	tool_bonus = cs.charisma
 	tool_label = "Playing Card Set"
-elif "chess" in args::
+elif "chess" in args:
 	tool_bonus = cs.intelligence
 	tool_label = "Dragonchess Set"
-elif "ante" in args::
+elif "ante" in args:
 	tool_bonus = cs.charisma
 	tool_label = "Three-Dragon Ante Set"
 
