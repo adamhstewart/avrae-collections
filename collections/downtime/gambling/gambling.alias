@@ -9,6 +9,7 @@ gambling_bonus = ""
 nl = "\n"
 rr_num = c.csettings.get("reroll", None)
 success_count = 0
+tool_bonus = ""
 
 # Process bonuses from args
 bonus = parse.get('b')
