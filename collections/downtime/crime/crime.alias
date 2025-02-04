@@ -111,7 +111,7 @@ if "tool" in args:
 
 	## Roll the tools check
 	tool_min = (10 if c.csettings.get("talent", False) else None)
-	tool_string = tool_bonus.d20(rr_num, tool_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus + profBonus
+	tool_string = tool_bonus.d20(rr_num, tool_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + proficiencyBonus
 	tool_check = vroll(tool_string)
 
 	## Check for tool success.
