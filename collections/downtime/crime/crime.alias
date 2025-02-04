@@ -46,7 +46,7 @@ dataSelect = load_json(get_svar("CrimeArgs", "{}"))
 dataSelect.update({'robbery': 'CrimeRobbery', 'forgery': 'CrimeForgery', 'impersonation': 'CrimeImpersonation'})
 svarName = dataSelect.get(args[0])
 crimedata = []
-defaultData = {'CrimeRobbery': '[{"crime": "robbery of a struggling merchant", "payoff": 150, "investment": 15, "DC": 10}, {"crime": "robbery of a prosperous merchant", "payoff": 250, "investment": 25, "DC": 15}, {"crime": "robbery of a noble", "payoff": 500, "investment": 50, "DC": 20}, {"crime": "robbery of one of the richest people in town", "payoff": 1000, "investment": 100, "DC": 25}]', 'CrimeForgery': '[{"crime": "Robbery of a struggling merchant", "payoff": 150, "investment": 15, "DC": 10}, {"crime": "Robbery of a prosperous merchant", "payoff": 250, "investment": 25, "DC": 15}, {"crime": "Robbery of a noble", "payoff": 500, "investment": 50, "DC": 20}, {"crime": "Robbery of one of the richest people in town", "payoff": 1000, "investment": 100, "DC": 25}]'}
+defaultData = {'CrimeRobbery': '[{"crime": "robbery of a struggling merchant", "payoff": 150, "investment": 15, "DC": 10}, {"crime": "robbery of a prosperous merchant", "payoff": 250, "investment": 25, "DC": 15}, {"crime": "robbery of a noble", "payoff": 500, "investment": 50, "DC": 20}, {"crime": "robbery of one of the richest people in town", "payoff": 1000, "investment": 100, "DC": 25}]', 'CrimeForgery': '[{"crime": "fake receipts & merchant ledgers", "payoff": 150, "investment": 15, "DC": 10}, {"crime": "counterfeit trade licenses & travel papers", "payoff": 250, "investment": 25, "DC": 15}, {"crime": "fake wills & property deeds", "payoff": 500, "investment": 50, "DC": 20}, {"crime": "forge edicts & military orders", "payoff": 1000, "investment": 100, "DC": 25}]', 'CrimeImpersonation': '[{"crime": "impersonate a common street hustler", "payoff": 150, "investment": 15, "DC": 10}, {"crime": "impersonate a guild apprentice or merchant ", "payoff": 250, "investment": 25, "DC": 15}, {"crime": "impersonate a noble\'s attendant or minor official ", "payoff": 500, "investment": 50, "DC": 20}, {"crime": "impersonate an envoy or military commander", "payoff": 1000, "investment": 100, "DC": 25}]'}
 if len(dataSelect) > 0:
 	if args[0] in dataSelect.keys():
 		crimedata = load_json(get_svar(svarName, defaultData.get(svarName)).replace("crime","cr").replace("payoff","p").replace("investment","i").replace("DC","d"))
@@ -95,7 +95,7 @@ lowest_skill_name = min(skills, key=skills.get)
 if "tool" in args:
 	if args[0] == "robbery":
 		tool_bonus = cs.dexterity
-		tool_label = "Thief Tools"
+		tool_label = "Thieves' Tools"
 	elif args[0] == "forgery":
 		tool_bonus = cs.dexterity
 		tool_label = "Forgery Kit"
