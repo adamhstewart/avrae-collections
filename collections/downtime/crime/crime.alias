@@ -103,6 +103,12 @@ if "tool" in args:
 		tool_bonus = cs.charisma
 		tool_label = "Disguise Kit"
 
+	## Remove the lowest skill bonus
+	skills.pop(lowest_skill_name, None)
+
+	## Add the tool bonus to the dictionary
+    skills["tool_bonus"] = tool_bonus
+
 	## Roll the tools check
 	tool_min = (10 if c.csettings.get("talent", False) else None)
 	tool_string = tool_bonus.d20(rr_num, tool_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
@@ -119,7 +125,7 @@ if "tool" in args:
 	base += f''' -f "**DC {crime_dc} {tool_label}**{nl}{tool_check}{nl}**{tool_message}**"'''
 
 
-if lowest_skill_name != "stealth_bonus" and "tool" in args:
+if "stealth_bonus" in skills:
 	## Roll the stealth check
 	stealth_label =  "Stealth"
 	stealth_min = (10 if c.csettings.get("talent", False) and stealth_bonus.prof else None)
@@ -136,7 +142,7 @@ if lowest_skill_name != "stealth_bonus" and "tool" in args:
 	## Provide the embed message.
 	base += f''' -f "**DC {crime_dc} {stealth_label}**{nl}{stealth_check}{nl}**{stealth_message}**"'''
 
-if lowest_skill_name != "deception_bonus" and "tool" in args:
+if "deception_bonus" in skills:
 	## Roll the deception check
 	deception_label =  "Deception"
 	deception_min = (10 if c.csettings.get("talent", False) and deception_bonus.prof else None)
@@ -153,7 +159,7 @@ if lowest_skill_name != "deception_bonus" and "tool" in args:
 	#Provide the embed message.
 	base += f''' -f "**DC {crime_dc} {deception_label}**{nl}{deception_check}{nl}**{deception_message}**"'''
 
-if lowest_skill_name != "third_skill_bonus" and "tool" in args:
+if "third_skill_bonus" in skills:
 	## Roll the third check
 	third_skill_min = (10 if c.csettings.get("talent", False) and third_skill_bonus.prof else None)
 	third_skill_string = third_skill_bonus.d20(rr_num, third_skill_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
