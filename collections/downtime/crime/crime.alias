@@ -63,38 +63,11 @@ if crime_details and len(crime_details) == 3:
     investment = crime_details[1]
     payoff = crime_details[2]
 
-## Roll the stealth check
+## Get Stealth and Deception skills.
 stealth_bonus = cs.stealth
-stealth_label =  "Stealth"
-stealth_min = (10 if c.csettings.get("talent", False) and stealth_bonus.prof else None)
-stealth_string = stealth_bonus.d20(rr_num, stealth_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
-stealth_check = vroll(stealth_string)
-
-## Check for stealth success.
-if stealth_check.total >= crime_dc:
-	stealth_message = "Success!"
-	success_count += 1
-
-else:
-	stealth_message = "Failure!"
-
-## Roll the deception check
 deception_bonus = cs.deception
-deception_label =  "Deception"
-deception_min = (10 if c.csettings.get("talent", False) and deception_bonus.prof else None)
-deception_string = deception_bonus.d20(rr_num, deception_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
-deception_check = vroll(deception_string)
 
-## Check for deception success.
-if deception_check.total >= crime_dc:
-	deception_message = "Success!"
-	success_count += 1
-
-else:
-	deception_message = "Failure!"
-
-## Roll the third check
-## Get the better of the skill investigation or perception
+## Get the better of the skill investigation or perception.
 invest_percept = [cs.investigation, cs.perception]
 third_skill_bonus = max(invest_percept)
 if cs.investigation >= cs.perception:
@@ -102,17 +75,74 @@ if cs.investigation >= cs.perception:
 else:
 	third_skill_label = "Perception"
 
-third_skill_min = (10 if c.csettings.get("talent", False) and third_skill_bonus.prof else None)
-third_skill_string = third_skill_bonus.d20(rr_num, third_skill_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
-third_skill_check = vroll(third_skill_string)
 
-## Check for deception success.
-if third_skill_check.total >= crime_dc:
-	third_skill_message = "Success!"
-	success_count += 1
+## Create a dict mapping variable names to values.
+skills = {
+    "stealth_bonus": stealth_bonus,
+    "deception_bonus": deception_bonus,
+    "third_skill_bonus": third_skill_bonus
+}
 
-else:
-	third_skill_message = "Failure!"
+## Find the key (variable name) with the lowest value.
+lowest_skill_name = min(skills, key=skills.get)
+
+## Process the tool argument.
+if "tool" in args:
+	if args[0] == "robbery"
+		tool_bonus = ch.skill.dexterity
+		tool_label = "Thief Tools"
+	elif args[0] == "forgery"
+		tool_bonus = ch.skill.dexterity
+		tool_label = "Forgery Kit"
+	elif args[0] == "impersonation":
+		tool_bonus = ch.skill.charisma
+		tool_label = "Disguise Kit"
+
+	## Roll the tools check
+	tool_min = (10 if c.csettings.get("talent", False) else None)
+	tool_string = tool_bonus.d20(rr_num, tool_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
+	tool_check = vroll(tool_string)
+
+if lowest_skill_name != "stealth_bonus" and "tool" in args:
+	## Roll the stealth check
+	stealth_label =  "Stealth"
+	stealth_min = (10 if c.csettings.get("talent", False) and stealth_bonus.prof else None)
+	stealth_string = stealth_bonus.d20(rr_num, stealth_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
+	stealth_check = vroll(stealth_string)
+
+	## Check for stealth success.
+	if stealth_check.total >= crime_dc:
+		stealth_message = "Success!"
+		success_count += 1
+	else:
+		stealth_message = "Failure!"
+
+if lowest_skill_name != "deception_bonus" and "tool" in args:
+	## Roll the deception check
+	deception_label =  "Deception"
+	deception_min = (10 if c.csettings.get("talent", False) and deception_bonus.prof else None)
+	deception_string = deception_bonus.d20(rr_num, deception_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
+	deception_check = vroll(deception_string)
+
+	## Check for deception success.
+	if deception_check.total >= crime_dc:
+		deception_message = "Success!"
+		success_count += 1
+	else:
+		deception_message = "Failure!"
+
+if lowest_skill_name != "third_skill_bonus" and "tool" in args:
+	## Roll the third check
+	third_skill_min = (10 if c.csettings.get("talent", False) and third_skill_bonus.prof else None)
+	third_skill_string = third_skill_bonus.d20(rr_num, third_skill_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
+	third_skill_check = vroll(third_skill_string)
+
+	## Check for deception success.
+	if third_skill_check.total >= crime_dc:
+		third_skill_message = "Success!"
+		success_count += 1
+	else:
+		third_skill_message = "Failure!"
 
 ## Get the final results.
 if success_count == 0:
