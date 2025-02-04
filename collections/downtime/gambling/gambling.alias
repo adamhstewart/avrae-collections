@@ -120,12 +120,13 @@ if "deception_bonus" in skills:
 	base += f''' -f "**DC {deception_dc} {deception_label}**{nl}{deception_check}{nl}**{deception_message}**"'''
 
 if "intimidation_bonus" in skills:
-	## Roll the third check
+	## Roll the intimidation check
+	intimidation_label = "Intimidation"
 	intimidation_min = (10 if c.csettings.get("talent", False) and intimidation_bonus.prof else None)
 	intimidation_string = intimidation_bonus.d20(rr_num, intimidation_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + gambling_bonus
 	intimidation_check = vroll(intimidation_string)
 
-	## Check for third skill success.
+	## Check for intimidation success.
 	intimidation_dc_roll = vroll("5+2d10")
 	intimidation_dc = intimidation_dc_roll.total
 	if intimidation_check.total >= intimidation_dc:
