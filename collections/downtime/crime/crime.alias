@@ -16,7 +16,11 @@ if "-b" in args:
 	crime_bonus += f'+{bonus[0]}'
 
 # Process the attempted DC
+valid_dc= [10, 15, 20, 25]
 crime_dc = int(parse.last('dc'))
+
+if crime_dc not in valid_dc:
+	return f"Error: {crime_dc} is not a valid DC."
 
 # Define a function to get the data for a crime given the DC.
 def get_crime_by_dc(crimedata, dc):
