@@ -88,10 +88,10 @@ lowest_skill_name = min(skills, key=skills.get)
 
 ## Process the tool argument.
 if "tool" in args:
-	if args[0] == "robbery"
+	if args[0] == "robbery":
 		tool_bonus = ch.skill.dexterity
 		tool_label = "Thief Tools"
-	elif args[0] == "forgery"
+	elif args[0] == "forgery":
 		tool_bonus = ch.skill.dexterity
 		tool_label = "Forgery Kit"
 	elif args[0] == "impersonation":
