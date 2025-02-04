@@ -23,7 +23,7 @@ else:
 
 ## Start the embed.
 T = f"{name} is Gambling!"
-D = f"The investment is {investment} GP and the potential payoff is {payoff} GP."
+D = f"The wager is {wager} GP."
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}"'''
 
 ## Get insight and Deception skills.
