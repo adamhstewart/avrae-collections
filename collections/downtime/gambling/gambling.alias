@@ -110,7 +110,7 @@ if "deception_bonus" in skills:
 	## Check for deception success.
 	deception_dc_roll = vroll("5+2d10")
 	deception_dc = deception_dc_roll.total
-	if deception_check.total >= crime_dc:
+	if deception_check.total >= deception_dc:
 		deception_message = "Success!"
 		success_count += 1
 	else:
