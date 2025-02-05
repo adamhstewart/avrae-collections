@@ -13,12 +13,17 @@ if ch.levels.total_level >= 3:
 
 #Logic of the alias. Check for all the necessary conditions.
 succ = "does not have"
-if ch.cc_exists(cc) and ch.get_cc(cc):
+if ch.cc_exists(cc):
     succ = "has"
     D = desc
 
-    if args[0]:
-        ch.mod_cc(cc, args[0])
+    if re.fullmatch(r"[+-]?\d+", args[0]):  # Matches +number, -number, or just number
+        if args[0][0] in "+-":  # If it starts with + or -
+            ch.mod_cc(cc, args[0])  # Process with mod_cc
+        else:
+            ch.set_cc(cc, args[0])  # Process with set_cc
+    else:
+    print("Error: Invalid input. Must be a number with optional + or -."))
 else:
     D = noCC
 
