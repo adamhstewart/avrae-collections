@@ -15,7 +15,7 @@ if ch.levels.total_level >= 3:
 succ = "does not have"
 if ch.cc_exists(cc) and ch.get_cc(cc):
     succ = "has"
-        D = desc
+    D = desc
 
     if args[0]:
         ch.mod_cc(cc, args[0])
