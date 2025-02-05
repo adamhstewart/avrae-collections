@@ -1,0 +1,32 @@
+<drac2>
+#Define variables for later use
+cc = "Downtime"
+desc = "You can spend your downtime doing activities for material or ability gain."
+noCC = "You do not have downtime available."
+ch=character()
+c=combat()
+args = &ARGS&
+
+#Create the counter if it should exist but doesn't already
+if ch.levels.total_level >= 3:
+    ch.create_cc_nx(cc, 0, None, None, None, None, None, cc, desc)
+
+#Logic of the alias. Check for all the necessary conditions.
+succ = "does not have"
+if ch.cc_exists(cc) and ch.get_cc(cc):
+    succ = "has"
+        D = desc
+
+    if args[0]:
+        ch.mod_cc(cc, args[0])
+else:
+    D = noCC
+
+## Build the embed.
+T = f"{name} {succ} {cc}!"
+F = f"{cc}|{ch.cc_str(cc) if ch.cc_exists(cc) else '*None*'}"
+
+base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}" -f "{F}"'''
+return base
+
+</drac2>
