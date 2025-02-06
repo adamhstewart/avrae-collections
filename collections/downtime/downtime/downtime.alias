@@ -16,12 +16,16 @@ succ = "does not have"
 if ch.cc_exists(cc):
     succ = "has"
     D = desc
-    if args[0].isdigit():
-        ch.set_cc(cc, args[0])
-    elif args[0].startswith(("+", "-")) and args[0][1:].isdigit():
-        ch.mod_cc(cc, int(args[0]))
+
+    if not args:  # If args is empty, pass it to another function
+        ch.default_function(cc)  # Replace with the function you want to call
     else:
-        err("Error: Invalid input. Must be an integer with optional + or -.")
+        if args[0].isdigit():
+            ch.set_cc(cc, args[0])
+        elif args[0].startswith(("+", "-")) and args[0][1:].isdigit():
+            ch.mod_cc(cc, int(args[0]))
+        else:
+            err("Error: Invalid input. Must be an integer with optional + or -.")
 else:
     D = noCC
 
