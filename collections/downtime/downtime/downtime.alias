@@ -19,7 +19,6 @@ if ch.cc_exists(cc):
     if args[0].isdigit():  # Check if it's a positive integer (e.g., "5")
         ch.set_cc(cc, args[0])
     elif args[0].startswith(("+", "-")) and args[0][1:].isdigit():  # Check for "+5" or "-3"
-        err(f"Debug: Received args[0] = '{args[0]}'")
         ch.mod_cc(cc, args[0])
     else:
         err("Error: Invalid input. Must be an integer with optional + or -.")
