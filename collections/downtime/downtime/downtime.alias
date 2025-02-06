@@ -18,7 +18,7 @@ if ch.cc_exists(cc):
     D = desc
 
     if not args:  # If args is empty, pass it to another function
-        ch.default_function(cc)  # Replace with the function you want to call
+        succ = "has some"
     else:
         if args[0].isdigit():
             ch.set_cc(cc, args[0])
