@@ -23,7 +23,7 @@ if ch.cc_exists(cc):
         else:
             ch.set_cc(cc, args[0])  # Process with set_cc
     else:
-    err("Error: Invalid input. Must be a number with optional + or -.")
+        err("Error: Invalid input. Must be a number with optional + or -.")
 else:
     D = noCC
 
