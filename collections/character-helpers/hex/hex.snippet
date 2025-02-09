@@ -1,0 +1,6 @@
+<drac2>
+if ctx.alias in ["c", "check", "join", "cadd", "dcadd"]:  # Last two are specifically for the only person who uses them, Dusk Argentum#6530
+  return """dis -f "Hex|The target has disadvantage on ability checks made with the chosen ability." """
+else:
+  return """-d "1d6 [hex necrotic]" -f "Hex|You deal an extra 1d6 necrotic damage to the target whenever you hit it with an attack" """
+</drac2>
