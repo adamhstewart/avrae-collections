@@ -15,6 +15,62 @@ bonus = parse.get('b')
 if "-b" in args:
 	crime_bonus += f'+{bonus[0]}'
 
+# Setup advantage boolwise logic
+advbase = parse.adv(boolwise=True)
+sar = parse.adv(custom={'adv': 'sadv', 'dis': 'sdis'}, boolwise=True)
+dar = parse.adv(custom={'adv': 'dadv', 'dis': 'ddis'}, boolwise=True)
+iar = parse.adv(custom={'adv': 'iadv', 'dis': 'idis'}, boolwise=True)
+par = parse.adv(custom={'adv': 'padv', 'dis': 'pdis'}, boolwise=True)
+if sar == None and advbase != None:
+	sar = advbase
+if dar == None and advbase != None:
+	dar = advbase
+if iar == None and advbase != None:
+	iar = advbase
+if par == None and advbase != None:
+	par = advbase
+
+if sar == True and advbase != None:
+	if advbase == False:
+		sar = None
+	else:
+		sar = sar
+if sar == False and advbase != None:
+	if advbase == True:
+		sar = None
+	else:
+		sar = sar
+if dar == True and advbase != None:
+	if advbase == False:
+		dar = None
+	else:
+		dar = dar
+if dar == False and advbase != None:
+	if advbase == True:
+		dar = None
+	else:
+		dar = dar
+if iar == True and advbase != None:
+	if advbase == False:
+		iar = None
+	else:
+		iar = iar
+if iar == False and advbase != None:
+	if advbase == True:
+		iar = None
+	else:
+		iar = iar
+if par == True and advbase != None:
+	if advbase == False:
+		par = None
+	else:
+		par = par
+if par == False and advbase != None:
+	if advbase == True:
+		par = None
+	else:
+		par = par
+
 # Process the attempted DC
 valid_dc= [10, 15, 20, 25]
 crime_dc = int(parse.last('dc'))
@@ -81,8 +137,10 @@ invest_percept = [cs.investigation, cs.perception]
 third_skill_bonus = max(invest_percept)
 if cs.investigation >= cs.perception:
 	third_skill_label = "Investigation"
+	thar = iar
 else:
 	third_skill_label = "Perception"
+	thar = par
 
 
 ## Create a dict mapping variable names to values.
@@ -133,7 +191,7 @@ if "stealth_bonus" in skills:
 	## Roll the stealth check
 	stealth_label =  "Stealth"
 	stealth_min = (10 if c.csettings.get("talent", False) and stealth_bonus.prof else None)
-	stealth_string = stealth_bonus.d20(rr_num, stealth_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
+	stealth_string = stealth_bonus.d20(sar, rr_num, stealth_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
 	stealth_check = vroll(stealth_string)
 
 	## Check for stealth success.
@@ -150,7 +208,7 @@ if "deception_bonus" in skills:
 	## Roll the deception check
 	deception_label =  "Deception"
 	deception_min = (10 if c.csettings.get("talent", False) and deception_bonus.prof else None)
-	deception_string = deception_bonus.d20(rr_num, deception_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
+	deception_string = deception_bonus.d20(dar, rr_num, deception_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
 	deception_check = vroll(deception_string)
 
 	## Check for deception success.
@@ -166,7 +224,7 @@ if "deception_bonus" in skills:
 if "third_skill_bonus" in skills:
 	## Roll the third check
 	third_skill_min = (10 if c.csettings.get("talent", False) and third_skill_bonus.prof else None)
-	third_skill_string = third_skill_bonus.d20(rr_num, third_skill_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
+	third_skill_string = third_skill_bonus.d20(thar, rr_num, third_skill_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + crime_bonus
 	third_skill_check = vroll(third_skill_string)
 
 	## Check for third skill success.
