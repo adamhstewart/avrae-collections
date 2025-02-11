@@ -21,6 +21,8 @@ sar = parse.adv(custom={'adv': 'sadv', 'dis': 'sdis'}, boolwise=True)
 dar = parse.adv(custom={'adv': 'dadv', 'dis': 'ddis'}, boolwise=True)
 iar = parse.adv(custom={'adv': 'iadv', 'dis': 'idis'}, boolwise=True)
 par = parse.adv(custom={'adv': 'padv', 'dis': 'pdis'}, boolwise=True)
+tar = parse.adv(custom={'adv': 'tadv', 'dis': 'tdis'}, boolwise=True)
+
 if sar == None and advbase != None:
 	sar = advbase
 if dar == None and advbase != None:
