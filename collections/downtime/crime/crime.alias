@@ -29,6 +29,8 @@ if iar == None and advbase != None:
 	iar = advbase
 if par == None and advbase != None:
 	par = advbase
+if tar == None and advbase != None:
+	tar = advbase
 
 if sar == True and advbase != None:
 	if advbase == False:
@@ -70,6 +72,17 @@ if par == False and advbase != None:
 		par = None
 	else:
 		par = par
+
+if tar == True and advbase != None:
+	if advbase == False:
+		tar = None
+	else:
+		tar = tar
+if tar == False and advbase != None:
+	if advbase == True:
+		tar = None
+	else:
+		tar = tar
 
 # Process the attempted DC
 valid_dc= [10, 15, 20, 25]
@@ -173,7 +186,7 @@ if "tool" in args:
 
 	## Roll the tools check
 	tool_min = (10 if c.csettings.get("talent", False) else None)
-	tool_string = tool_bonus.d20(rr_num, tool_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + f"+{proficiencyBonus or 0}"
+	tool_string = tool_bonus.d20(tar, rr_num, tool_min) + ("+1d4[guidance]" if parse.get("guidance") else "") + f"+{proficiencyBonus or 0}"
 	tool_check = vroll(tool_string)
 
 	## Check for tool success.
