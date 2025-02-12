@@ -199,7 +199,7 @@ if "tool" in args:
 		tool_message = "Failure!"
 
 	## Provide the embed message.
-	base += f''' -f "**DC {crime_dc} {tool_label}**{nl}{tool_check}{nl}**{tool_message}**"'''
+	base += f''' -f "**DC {crime_dc} {tool_label}**{nl}{tool_check}{nl}**{tool_message}**{nl}Reroll: {rr_num}"'''
 
 
 if "stealth_bonus" in skills:
