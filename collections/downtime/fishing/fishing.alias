@@ -34,7 +34,7 @@ dataSelect.update({'river': 'FishSpeciesRiver', 'lake': 'FishSpeciesLake', 'sea'
 svarName = dataSelect.get(args[0])
 fishdata = []
 
-defaultData = {'FishSpeciesRiver', '[{"species": "Catfish", "weight": 20, "percent": 0, "DC": 10}, {"species": "Bass", "weight": 5, "percent": 35, "DC": 5}, {"species": "Carp", "weight": 10, "percent": 60, "DC": 5}, {"species": "Salmon", "weight": 25, "percent": 75, "DC": 15}, {"species": "Sturgeon", "weight": 100, "percent": 90, "DC": 15}]'}
+defaultData = {'FishSpeciesRiver': '[{"species": "Catfish", "weight": 20, "percent": 0, "DC": 10}, {"species": "Bass", "weight": 5, "percent": 35, "DC": 5}, {"species": "Carp", "weight": 10, "percent": 60, "DC": 5}, {"species": "Salmon", "weight": 25, "percent": 75, "DC": 15}, {"species": "Sturgeon", "weight": 100, "percent": 90, "DC": 15}]'}
 
 if len(dataSelect) > 0:
 	if args[0] in dataSelect.keys():
