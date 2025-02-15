@@ -23,13 +23,23 @@ find_bonus = ""
 catch_bonus = ""
 harv_bonus = ""
 
+# Setup error based on args
+if len(args) == 0:
+	err(f'''You must provide an argument for the type of fishing you want to do, core arguments include `river`, `lake`, and `sea`. Your server may have additional options, contact your bot gurus for details''')
+
+
 # Load svars
 dataSelect = load_json(get_svar("FishArgs", "{}"))
 dataSelect.update({'river': 'FishSpeciesRiver', 'lake': 'FishSpeciesLake', 'sea': 'FishSpeciesSea'})
-fishdata = load_json(get_svar("FishSpeciesRiver", '[{"species": "Catfish", "weight": 20, "percent": 0, "DC": 10}, {"species": "Bass", "weight": 5, "percent": 35, "DC": 5}, {"species": "Carp", "weight": 10, "percent": 60, "DC": 5}, {"species": "Salmon", "weight": 25, "percent": 75, "DC": 15}, {"species": "Sturgeon", "weight": 100, "percent": 90, "DC": 15}]').replace("species","s").replace("weight","w").replace("percent","p").replace("DC","d").replace("info","i").replace("meat","m"))
+svarName = dataSelect.get(args[0])
+fishdata = []
+
+defaultData = {'FishSpeciesRiver', '[{"species": "Catfish", "weight": 20, "percent": 0, "DC": 10}, {"species": "Bass", "weight": 5, "percent": 35, "DC": 5}, {"species": "Carp", "weight": 10, "percent": 60, "DC": 5}, {"species": "Salmon", "weight": 25, "percent": 75, "DC": 15}, {"species": "Sturgeon", "weight": 100, "percent": 90, "DC": 15}]'}
+
 if len(dataSelect) > 0:
-	if args and args[0] in dataSelect.keys():
-		fishdata = load_json(get_svar(dataSelect.get(args[0]), "[]").replace("species","s").replace("weight","w").replace("percent","p").replace("DC","d").replace("info","i").replace("meat","m"))
+	if args[0] in dataSelect.keys():
+		fishdata = load_json(get_svar(svarName, defaultData.get(svarName)).replace("species","s").replace("weight","w").replace("percent","p").replace("DC","d").replace("info","i").replace("meat","m"))
+
 settings = load_json(get_svar("SurvSettings", '{"fishFind": [10,50,80,95], "fishHarvDC": 20, "huntFind": [10,45,75,90], "huntHarvDC": 22, "foraFind": [15,40,85,90], "foraHarvDC": 17, "harvest": true, "cooldown": false, "coolTime": 0, "fishCool": false, "fishCoolTime": 0, "huntCool": false, "huntCoolTime": 0, "forageCool": false, "forageCoolTime": 0}'))
 
 if not settings.get('coolType'):
