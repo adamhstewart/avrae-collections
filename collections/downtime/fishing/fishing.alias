@@ -107,7 +107,9 @@ if har == False and advbase != None:
 		har = None
 	else:
 		har = har
+
 # Setup settings for automatic harvesting
+harv_setting = load_json(get("fishSurvHarvesting", "true").lower())
 if harv_setting is False or settings.get('harvest') is False:
 	harvesting = False
 else:
