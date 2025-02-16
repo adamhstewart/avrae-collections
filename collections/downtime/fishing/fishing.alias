@@ -34,7 +34,7 @@ dataSelect.update({'river': 'FishSpeciesRiver', 'lake': 'FishSpeciesLake', 'sea'
 svarName = dataSelect.get(args[0])
 fishdata = []
 
-defaultData = {'FishSpeciesRiver': '[{"species": "Catfish", "weight": 20, "percent": 0, "DC": 10}, {"species": "Bass", "weight": 5, "percent": 35, "DC": 5}, {"species": "Carp", "weight": 10, "percent": 60, "DC": 5}, {"species": "Salmon", "weight": 25, "percent": 75, "DC": 15}, {"species": "Sturgeon", "weight": 100, "percent": 90, "DC": 15}]'}
+defaultData = {'FishSpeciesRiver': '[{"species": "Bluegill", "weight": 3, "percent": 0, "DC": 15}, {"species": "Trout (Rainbow/Brook)", "weight": 6, "percent": 25, "DC": 15}, {"species": "Catfish", "weight": 12, "percent": 50, "DC": 15}, {"species": "Pike", "weight": 20, "percent": 65, "DC": 15}, {"species": "Sturgeon", "weight": 30, "percent": 85, "DC": 15}]', 'FishSpeciesLake': '[{"species": "Perch", "weight": 3, "percent": 0, "DC": 15}, {"species": "Bass (Largemouth/Smallmouth)", "weight": 9, "percent": 25, "DC": 15}, {"species": "Walleye", "weight": 12, "percent": 50, "DC": 15}, {"species": "Muskellunge (Muskie)", "weight": 24, "percent": 65, "DC": 15}, {"species": "Lake Trout", "weight": 30, "percent": 85, "DC": 15}]', 'FishSpeciesSea': '[{"species": "Mackerel", "weight": 6, "percent": 0, "DC": 15}, {"species": "Snapper (Red/Yellowtail)", "weight": 12, "percent": 25, "DC": 15}, {"species": "Tuna (Skipjack/Albacore)", "weight": 18, "percent": 50, "DC": 15}, {"species": "Marlin (Blue/Black/Striped)", "weight": 24, "percent": 65, "DC": 15}, {"species": "Swordfish", "weight": 30, "percent": 85, "DC": 15}]'}
 
 if len(dataSelect) > 0:
 	if args[0] in dataSelect.keys():
@@ -107,18 +107,6 @@ if har == False and advbase != None:
 		har = None
 	else:
 		har = har
-
-# Setup settings for bag integration and automatic harvesting
-bag_setting = load_json(get("SurvivalNoBag", "false").lower())
-if bag_setting is True:
-	bag_integration = False
-else:
-	bag_integration = True
-harv_setting = load_json(get("fishSurvHarvesting", "true").lower())
-if harv_setting is False or settings.get('harvest') is False:
-	harvesting = False
-else:
-	harvesting = True
 
 # Help setup
 help = f'''help {ctx.alias} -here'''
@@ -202,37 +190,20 @@ if find_check.total >= find_dc:
 		if harvesting and (targeted == True or targeted == None):
 			dumb = '\*'
 			base += f''' -f "Time to clean your catch|**DC {max_DC}** (for 100%){nl}**Max Weight:** {max_weight} lbs.{nl}**{hskill}:** {harvest_check}/{max_DC}{dumb+str(harv_mult) if harv_mult>1 else ''}\*100 = **{harv_percent}%** (max 100){nl}You harvested: **{harvest}** lbs. of **{deposit}**{nl+'*Background or class feature affected harvest math*' if harv_mod or harv_mult>1 else ''}"'''
-			if bag_integration is False:
-				base += f''' -footer "{ctx.prefix}survival help | @eternalphoenix64#3855 | Harvest was not automatically added to your bag."'''
-			else:
-				bag_name = 'Fish'
-				bag = load_json(get('bags', []))
-				for bag_cat in bag:
-					if bag_name.lower() in bag_cat[0].lower():
-						bag_name = bag_cat[0]
-						bag_loot_count = bag_cat[1][deposit] if deposit in list(bag_cat[1].keys()) else 0
-						bag_cat[1][deposit] = bag_cat[1][deposit] + harvest if bag_loot_count > 0 else harvest
-						loot_added = True
-						break
-				if not loot_added:
-					bag.append([bag_name, {deposit: harvest}])
-				c.set_cvar('bags', dump_json(bag))
-				base += f''' -f "Your fish harvest was added to your bag!|{harvest} pounds of **{deposit}** was added to your __{bag_name.capitalize()}__ pouch for you!"'''
-				base += f''' -footer "{ctx.prefix}survival help | @eternalphoenix64#3855"'''
+			base += f''' -footer "{ctx.prefix}fishing help"'''
 		elif harvesting and targeted == False:
 			base += f''' -f "Catch and Release|You wanted to catch a **{'** or **'.join(specific_species)}** but caught **{species}** instead, so you threw it back."'''
-			base += f''' -footer "{ctx.prefix}survival help | @eternalphoenix64#3855"'''
+			base += f''' -footer "{ctx.prefix}fishing help"'''
 		else:
 			base += f''' -f "Catch and Release|You're a good person. Thank you for not overfishing."'''
-			base += f''' -footer "{ctx.prefix}survival help | @eternalphoenix64#3855"'''
+			base += f''' -footer "{ctx.prefix}fishing help"'''
 	else:
 		base += f''' -f "Your fish got away!|**DC {catch_dc}**{nl}**{cskill}:** {catch_check}"'''
-		base += f''' -footer "{ctx.prefix}survival help | @eternalphoenix64#3855"'''
+		base += f''' -footer "{ctx.prefix}fishing help"'''
 elif find_dc >= 60 and find_check.total < find_dc:
 	base += f''' -f "There was nothing here!|**DC {find_dc}**{nl}**{fskill}:** {find_check}"'''
 else:
 	base += f''' -f "You couldn't find anything!|**DC {find_dc}**{nl}**{fskill}:** {find_check}"'''
-	base += f''' -footer "{ctx.prefix}survival help | @eternalphoenix64#3855"'''
-
+	base += f''' -footer "{ctx.prefix}fishing help"'''
 return base
 </drac2>
