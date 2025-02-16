@@ -107,6 +107,11 @@ if har == False and advbase != None:
 		har = None
 	else:
 		har = har
+# Setup settings for automatic harvesting
+if harv_setting is False or settings.get('harvest') is False:
+	harvesting = False
+else:
+	harvesting = True
 
 # Help setup
 help = f'''help {ctx.alias} -here'''
