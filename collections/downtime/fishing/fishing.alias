@@ -1,7 +1,7 @@
 <drac2>
 
 # Setup the embed
-base = f'''embed -title "{name} goes fishing!" -color {color} -thumb {image} -desc "Fishing is a complicated process. You need to find a good spot, choose the right bait, hook a fish and bring it in, then gut and clean the fish to harvest the meat. There's a reason they don't call it catching, y'know."'''
+base = f'''embed -title "{name} goes fishing!" -color {color} -thumb {image} -desc "Fishing is a complicated process. You need to find a good spot (nature), choose the right bait, hook a fish and bring it in (survival), then gut and clean the fish to harvest the meat (survival)."'''
 
 # Load data and seed variables
 c = character()
