@@ -8,7 +8,7 @@ if not combatant:
     return f"Error: Combatant '{name}' not found."
 
 # Ensure the effect parameters are correctly formatted
-combatant.add_effect("Agile Perry", "-ac 2", 1,
+combatant.add_effect("Agile Perry", "-ac +2", 1,
     desc="You gain a +2 bonus to AC until the start of your next turn, while the weapon is in your hand and you aren't incapacitated.")
 
 return '''-f "Agile Perry | If you make an unarmed strike as part of the Attack action on your turn and are holding a kensei weapon, you can use it to defend yourself if it is a melee weapon. You gain a +2 bonus to AC until the start of your next turn, while the weapon is in your hand and you aren't incapacitated." '''
