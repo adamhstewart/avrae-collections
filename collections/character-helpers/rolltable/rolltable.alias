@@ -34,8 +34,8 @@ roll_result = get_dragons_location(table_roll.total)
 
 ## Build the embed.
 T = f"Where is the Dragon?"
-D = f"You rolled a **{table_roll}**{nl} The dragon is: **{roll_result}**"
-F = f"!rolltable|CuratedPip"
+D = f"Your roll: **{table_roll}**{nl}The dragon's location: **{roll_result}**"
+F = f"!rolltable ? | CuratedPip"
 
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}" -f "{F}"'''
 return base
