@@ -1,5 +1,7 @@
 <drac2>
 
+nl = "\n"
+
 def get_dragons_location(d20_roll):
     dragons_location_dict = {
         1: "Axeholm",
