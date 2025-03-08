@@ -1,0 +1,1 @@
+An alias to automate various roll tables.
