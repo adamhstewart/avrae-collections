@@ -1,6 +1,8 @@
 <drac2>
 
 nl = "\n"
+args = &ARGS&
+parse = argparse(args)
 
 def get_dragons_location(d20_roll):
     dragons_location_dict = {
@@ -28,15 +30,54 @@ def get_dragons_location(d20_roll):
 
     return dragons_location_dict.get(d20_roll, "Invalid roll. Must be between 1 and 20.")
 
+
+def get_random_encounter_trail (d20_roll):
+    random_encounter_trail_dict = {
+        1: "1 hobgoblin captain with 1d4 + 1 hobgoblins",
+        2: "1 phase spider",
+        3: "1 ankheg",
+        4: "1d6 + 2 giant wasps or 1d4 + 3 swarms of insects",
+        5: "1 ogre or 1d3 bugbears",
+        6: "1d6 + 3 goblins (optionally riding wolves)",
+        7: "2d6 + 2 boars",
+        8: "2d4 orcs or 1 orog",
+        9: "2d4 + 2 axe beaks",
+        10: "1d3 centaurs being attacked by 1 orc Eye of Gruumsh with 2d4+1 orcs",
+        11: "1 giant boar",
+        12: "1d4 + 2 orcs",
+        13: "2d6 giant wolf spiders",
+        14: "1d3 cockatrices",
+        15: "1 bandit chief with 2d6 bandits",
+        16: "1 wereboar",
+        17: "1d8 worgs",
+        18: "1 cyclops or 1 bulette",
+        19: "1 goblin boss with 1d6 + 2 goblins and 1d4 + 3 wolves",
+        20: "1d3 manticores"
+    }
+
+    return random_encounter_trail_dict.get(d20_roll, "Invalid roll. Must be between 1 and 20.")
+
+
 table_roll = vroll('1d20')
 
-roll_result = get_dragons_location(table_roll.total)
+if "dragon" in args:
+    roll_result = get_dragons_location(table_roll.total)
+    T = f"Where is the Dragon?"
+    D = f"Your roll: **{table_roll}**{nl}The dragon's location: **{roll_result}**"
+elif "triboar" in args:
+    encounter_roll = vroll('1d100')
+    if encounter_roll.total >= 80:
+        roll_result = get_random_encounter_trail(table_roll.total)
+        T = f"Your encounter roll was: **{encounter_roll}**{nl}You have an encounter!"
+        D = f"Your roll: **{table_roll}**{nl}You encountered: **{roll_result}**"
+    else:
+        T = f"Your encounter roll was: **{encounter_roll}**{nl}No encounter!"
+        D = f"All is quiet on the trail."
+else:
+    err(f'''You must provide an argument for the thanle you want to roll on.''')
 
-## Build the embed.
-T = f"Where is the Dragon?"
-D = f"Your roll: **{table_roll}**{nl}The dragon's location: **{roll_result}**"
+## Create the embed.
 F = f"{ctx.prefix}rolltable help | @CuratedPip"
-
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}" -f "{F}"'''
 return base
 </drac2>
