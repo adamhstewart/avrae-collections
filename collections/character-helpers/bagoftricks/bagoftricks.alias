@@ -23,26 +23,26 @@ if color not in ["rust","gray","tan"]:
     creatures=["Jackal","Ape","Baboon","Axe Beak","Black Bear","Giant Weasel","Giant Hyena","Tiger"]
 
 # Create the counter if it doesn't exist.
-ch.create_cc_nx(cn, 0, 3, "long", "bubble", None, None, cn, desc)
+char.create_cc_nx(cn, 0, 3, "long", "bubble", None, None, cn, desc)
 
 #Check for all the necessary conditions.
 succ = "tries to use"
-if ch.cc_exists(cn) and ch.get_cc(cn):
+if char.cc_exists(cn) and char.get_cc(cn):
     succ = "uses"
     D = desc
-    ch.mod_cc(cn, -1)
+    char.mod_cc(cn, -1)
     fuzzy_roll=vroll("1d8")
     r=fuzzy_roll.total
     creature=creatures[r-1]
     text = "A "+{creature}+" appears!"
-elif ch.cc_exists(cn):
+elif char.cc_exists(cn):
     D = rest
 else:
     D = noCC
 
 ## Build the embed.
 T = f"{name} {succ} {cc}: {text}!"
-F = f"{cn}|{ch.cc_str(cn) if ch.cc_exists(cn) else '*None*'}"
+F = f"{cn}|{char.cc_str(cn) if char.cc_exists(cn) else '*None*'}"
 
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}" -f "{F}"'''
 return base
