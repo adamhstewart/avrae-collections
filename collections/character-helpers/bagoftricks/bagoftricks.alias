@@ -9,12 +9,11 @@ noCC = "You do not have this item."
 # Check the arguments and return the proper list of creatures.
 if len(args) == 0:
   err(f'''Specify bag color: !Fuzzy rust, !Fuzzy gray, or !Fuzzy tan''')
+else:
+  color=args[0].lower()
 
 if color not in ["rust","gray","tan"]:
   err(f'''Invalid color. Use !Fuzzy rust, !Fuzzy gray, or !Fuzzy tan''')
-
-else:
-  color=args[0].lower()
 
   if color=="rust":
     creatures=["Rat","Owl","Mastiff","Goat","Giant Goat","Giant Boar","Lion","Brown Bear"]
