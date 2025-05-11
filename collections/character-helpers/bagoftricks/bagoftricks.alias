@@ -31,7 +31,7 @@ if char.cc_exists(cn) and char.get_cc(cn):
     fuzzy_roll=vroll("1d8")
     r=fuzzy_roll.total
     creature=creatures[r-1]
-    text = "A "+{creature}+" appears!"
+    text = f"A {creature} appears!"
 elif char.cc_exists(cn):
     D = rest
 else:
