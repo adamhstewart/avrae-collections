@@ -28,17 +28,19 @@ if char.cc_exists(cn) and char.get_cc(cn):
     succ = "uses"
     D = desc
     char.mod_cc(cn, -1)
-    fuzzy_roll=vroll("1d8")
-    r=fuzzy_roll.total
-    creature=creatures[r-1]
-    text = f"A {creature} appears"
+    fuzzy_roll = vroll("1d8")
+    r = fuzzy_roll.total
+    creature = creatures[r-1]
+    text = f": A {creature} appears"
 elif char.cc_exists(cn):
     D = rest
+    text = ""
 else:
     D = noCC
+    text = ""
 
 ## Build the embed.
-T = f"{name} {succ} {cn}: {text}!"
+T = f"{name} {succ} {cn}{text}!"
 F = f"{cn}|{char.cc_str(cn) if char.cc_exists(cn) else '*None*'}"
 footer = f"{ctx.prefix}bagoftricks by WilWonka"
 
