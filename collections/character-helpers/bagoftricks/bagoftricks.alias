@@ -45,5 +45,4 @@ F = f"{cn}|{ch.cc_str(cn) if ch.cc_exists(cn) else '*None*'}"
 
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}" -f "{F}"'''
 return base
-
 </drac2>
