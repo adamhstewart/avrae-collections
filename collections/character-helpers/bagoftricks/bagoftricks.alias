@@ -39,8 +39,9 @@ else:
 
 ## Build the embed.
 T = f"{name} {succ} {cn}: {text}!"
-F = f"{cn}|{char.cc_str(cn) if char.cc_exists(cn) else '*None*'}|{ctx.prefix}bagoftricks by WilWonka"
+F = f"{cn}|{char.cc_str(cn) if char.cc_exists(cn) else '*None*'}"
+footer = f"{ctx.prefix}bagoftricks by WilWonka"
 
-base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}" -f "{F}"'''
+base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}" -f "{F}" -footer "{footer}"'''
 return base
 </drac2>
