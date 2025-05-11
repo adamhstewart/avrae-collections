@@ -4,6 +4,82 @@ nl = "\n"
 args = &ARGS&
 parse = argparse(args)
 
+
+
+python
+Always show details
+
+Copy
+# Combine all three encounter roll tables into one dictionary
+roll_tables = {
+    "DragonLocations": {
+        1: "Axeholm",
+        2: "Butterskull Ranch",
+        3: "Conyberry",
+        4: "Dragon Barrow",
+        5: "Dwarven Excavation",
+        6: "Falcon’s Hunting Lodge",
+        7: "Gnomengarde",
+        8: "High Road",
+        9: "Icespire Hold",
+        10: "Leilon",
+        11: "Loggers’ Camp",
+        12: "Mountain’s Toe Gold Mine",
+        13: "Neverwinter",
+        14: "Phandalin",
+        15: "Shrine of Savras",
+        16: "Starmetal Hills",
+        17: "Tower of Storms",
+        18: "Triboar Trail",
+        19: "Umbrage Hill",
+        20: "Woodland Manse"
+    },
+    "TrailEncounters": {
+        1: "1 hobgoblin captain with 1d4 + 1 hobgoblins",
+        2: "1 phase spider",
+        3: "1 ankheg",
+        4: "1d6 + 2 giant wasps or 1d4 + 3 swarms of insects",
+        5: "1 ogre or 1d3 bugbears",
+        6: "1d6 + 3 goblins (optionally riding wolves)",
+        7: "2d6 + 2 boars",
+        8: "2d4 orcs or 1 orog",
+        9: "2d4 + 2 axe beaks",
+        10: "1d3 centaurs being attacked by 1 orc Eye of Gruumsh with 2d4+1 orcs",
+        11: "1 giant boar",
+        12: "1d4 + 2 orcs",
+        13: "2d6 giant wolf spiders",
+        14: "1d3 cockatrices",
+        15: "1 bandit chief with 2d6 bandits",
+        16: "1 wereboar",
+        17: "1d8 worgs",
+        18: "1 cyclops or 1 bulette",
+        19: "1 goblin boss with 1d6 + 2 goblins and 1d4 + 3 wolves",
+        20: "1d3 manticores"
+    },
+    "ForestEncounters": {
+        1: "1d4 displacer beasts",
+        2: "1 giant poisonous snake",
+        3: "1d6 + 2 boars",
+        4: "1d3 black bears",
+        5: "1d6 + 2 giant bats",
+        6: "1d4 + 1 needle blights or 1d6 + 3 twig blights",
+        7: "3d6 stirges",
+        8: "3d6 bandits",
+        9: "1d4 + 3 goblins",
+        10: "1d4 + 4 wolves",
+        11: "2d4 giant wolf spiders",
+        12: "1d3 dryads (hostile or non-hostile)",
+        13: "1 ettercap or 1d8 + 1 orcs",
+        14: "1 ankheg",
+        15: "1 werewolf or 1d8 + 1 worgs",
+        16: "1d4 dire wolves or 1 giant boar",
+        17: "1d4 bugbears or 2d4 hobgoblins",
+        18: "1 will-o-wisp or 1 green hag",
+        19: "1 shambling mound",
+        20: "1 owlbear"
+    }
+}
+
 def get_dragons_location(d20_roll):
     dragons_location_dict = {
         1: "Axeholm",
@@ -74,10 +150,10 @@ elif "triboar" in args:
         T = f"Your encounter roll was: **{encounter_roll}**{nl}No encounter!"
         D = f"All is quiet on the trail."
 else:
-    err(f'''You must provide an argument for the thanle you want to roll on.''')
+    err(f'''You must provide an argument for the table you want to roll on.''')
 
 ## Create the embed.
-F = f"{ctx.prefix}rolltable help | @CuratedPip"
+F = f"{ctx.prefix}rolltable help @CuratedPip"
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}" -f "{F}"'''
 return base
 </drac2>
