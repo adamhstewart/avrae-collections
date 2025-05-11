@@ -20,7 +20,7 @@ else:
   err(f'''Invalid color. Use !Fuzzy rust, !Fuzzy gray, or !Fuzzy tan''')
 
 # Create the counter if it doesn't exist.
-char.create_cc_nx(cn, 0, 3, "long", "bubble", None, None, cn, desc)
+char.create_cc_nx(cn, 0, 3, "long", "bubble", 3, None, cn, desc)
 
 #Check for all the necessary conditions.
 succ = "tries to use"
@@ -31,7 +31,7 @@ if char.cc_exists(cn) and char.get_cc(cn):
     fuzzy_roll=vroll("1d8")
     r=fuzzy_roll.total
     creature=creatures[r-1]
-    text = f"A {creature} appears!"
+    text = f"A {creature} appears"
 elif char.cc_exists(cn):
     D = rest
 else:
