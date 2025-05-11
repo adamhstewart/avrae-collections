@@ -38,7 +38,7 @@ else:
     D = noCC
 
 ## Build the embed.
-T = f"{name} {succ} {cc}: {text}!"
+T = f"{name} {succ} {cn}: {text}!"
 F = f"{cn}|{char.cc_str(cn) if char.cc_exists(cn) else '*None*'}"
 
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}" -f "{F}"'''
