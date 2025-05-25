@@ -41,6 +41,32 @@ if args[0] in ["add", "remove"]:
     # Message text
     verb = "adds" if num > 0 else "removes"
 
+elif args[0] == "use":
+    # Check that the character has the potion
+    if not ch.cc_exists(cc):
+        err(f"You don't have any {cc}.")
+    if ch.get_cc(cc) <= 0:
+        err(f"You are out of {cc}!")
+
+    # Define the healing roll for each potion type
+    healing_rolls = {
+        "Potions of Healing": "2d4 + 2",
+        "Potions of Greater Healing": "4d4 + 4",
+        "Potions of Superior Healing": "8d4 + 8"
+    }
+
+    # Roll healing
+    formula = healing_rolls[cc]
+    result = vroll(formula)
+    healing = result.total
+
+    # Subtract 1 potion
+    ch.mod_cc(cc, -1)
+
+    # Heal character
+    hp_change = ch.modify_hp(healing, False, False)
+    desc = f"{result.expr} = {healing} HP healed.\n\n{hp_change}"
+    verb = "uses a"
 
 else:
     err("We haven't gotten there yet.")
