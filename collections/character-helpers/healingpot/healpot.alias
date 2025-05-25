@@ -1,0 +1,54 @@
+<drac2>
+#Define variables for later use
+
+desc = "A potion of healing is a real lifesaver!."
+noCC = "You do not have this ability."
+ch=character()
+c=combat()
+args = &ARGS&
+
+##Check if we are in combat.
+if not c:
+    err('This channel is not in combat.')
+
+# Setup type based on argument.
+if args[0] == "add":
+    if "greater" in args:
+        cc = "Potions of Greater Healing"
+    if "superior" in args:
+        cc ="Potions of Greater Healing"
+    else:
+       cc = "Potions of Healing"
+
+    #Create the counter if it doesn't already
+    ch.create_cc_nx(cc, 0, None, None, None, None, None, cc, desc)
+
+    # Extract all numbers from the arguments
+    numbers = [int(a) for a in args if a.isdigit()]
+
+    if len(numbers) != 1:
+        err("Please include exactly one number to add, like `!healpot add 3` or `!healpot add greater 2`.")
+
+    num = numbers[0]
+    ch.mod_cc(cc, num)
+    action = "Adds"
+
+else:
+    err("We haven't gotten there yet.")
+
+#Logic of the alias. Check for all the necessary conditions.
+
+if ch.cc_exists(cc) and ch.get_cc(cc):
+    D = desc
+elif ch.cc_exists(cc):
+    D = "You have no healing potions left.""
+else:
+    D = "Something went wrong."
+
+## Build the embed.
+T = f"{name} {action} {cc}!"
+F = f"{cc}|{ch.cc_str(cc) if ch.cc_exists(cc) else '*None*'}"
+
+base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}" -f "{F}"'''
+return base
+</drac2>
