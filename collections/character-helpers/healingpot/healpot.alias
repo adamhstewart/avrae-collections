@@ -30,7 +30,7 @@ if args[0] == "add":
 
     num = numbers[0]
     ch.mod_cc(cc, num)
-    action = "Adds"
+    action = "adds"
 
 else:
     err("We haven't gotten there yet.")
