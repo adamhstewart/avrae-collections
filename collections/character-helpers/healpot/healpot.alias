@@ -74,11 +74,9 @@ else:
 
 #Logic of the alias. Check for all the necessary conditions.
 
-if ch.cc_exists(cc) and ch.get_cc(cc):
+if ch.cc_exists(cc):
     D = desc
     increment = f""
-elif ch.cc_exists(cc):
-    D = "You have no healing potions left."
 else:
     D = "Something went very wrong."
 
