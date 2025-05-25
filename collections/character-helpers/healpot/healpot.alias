@@ -49,6 +49,7 @@ else:
 
 if ch.cc_exists(cc) and ch.get_cc(cc):
     D = desc
+    increment = f""
 elif ch.cc_exists(cc):
     D = "You have no healing potions left."
 else:
@@ -56,7 +57,7 @@ else:
 
 ## Build the embed.
 T = f"{name} {verb} {cc}!"
-F = f"{cc}|{ch.cc_str(cc) if ch.cc_exists(cc) else '*None*'}"
+F = f"{cc}|{ch.cc_str(cc)} ({'+' if num > 0 else ''}{num})"
 
 base = f'''embed -title "{T}" -color {color} -thumb {image} -desc "{D}" -f "{F}"'''
 return base
