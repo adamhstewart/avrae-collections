@@ -15,9 +15,9 @@ if args[0] == "add":
     if "greater" in args:
         cc = "Potions of Greater Healing"
     if "superior" in args:
-        cc ="Potions of Greater Healing"
+        cc ="Potions of Superior Healing"
     else:
-       cc = "Potions of Healing"
+        cc = "Potions of Healing"
 
     #Create the counter if it doesn't already
     ch.create_cc_nx(cc, 0, None, None, None, None, None, cc, desc)
