@@ -1,7 +1,6 @@
 <drac2>
 #Define variables for later use
-
-desc = "A potion of healing is a real lifesaver!."
+desc = "A potion of healing is a real lifesaver!"
 noCC = "You do not have this ability."
 ch=character()
 c=combat()
