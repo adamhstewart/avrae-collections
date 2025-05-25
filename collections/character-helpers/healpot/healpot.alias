@@ -65,7 +65,8 @@ elif args[0] == "use":
 
     # Heal character
     hp_change = ch.modify_hp(healing, False, False)
-    desc = f"{result.expr} = {healing} HP healed.\n\n{hp_change}"
+    desc = f"{formula} = {healing} HP healed.\n\n{hp_change}"
+
     verb = "uses a"
 
 else:
