@@ -42,7 +42,7 @@ if ch.cc_exists(cc) and ch.get_cc(cc):
 elif ch.cc_exists(cc):
     D = "You have no healing potions left."
 else:
-    D = "Something went wrong."
+    D = "Something went very wrong."
 
 ## Build the embed.
 T = f"{name} {action} {cc}!"
