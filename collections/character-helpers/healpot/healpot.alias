@@ -70,7 +70,7 @@ elif args[0] == "use":
 
         # Determine target (from -t or default to own combatant)
     if target_name:
-        target = combat().get_combatant(target_name)
+        target = combat().get_combatant(target_name[0])
     else:
         target = combat().get_combatant(ch.name)
 
