@@ -40,7 +40,7 @@ else:
 if ch.cc_exists(cc) and ch.get_cc(cc):
     D = desc
 elif ch.cc_exists(cc):
-    D = "You have no healing potions left.""
+    D = "You have no healing potions left."
 else:
     D = "Something went wrong."
 
