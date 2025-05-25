@@ -42,6 +42,11 @@ if args[0] in ["add", "remove"]:
     verb = "adds" if num > 0 else "removes"
 
 elif args[0] == "use":
+    ## Get the target
+    parse = argparse(args)
+    target_name = parse.get("t")
+    bonus = parse.get("b", 0)
+
     # Check that the character has the potion
     if not ch.cc_exists(cc):
         err(f"You don't have any {cc}.")
@@ -63,8 +68,17 @@ elif args[0] == "use":
     # Subtract 1 potion
     ch.mod_cc(cc, -1)
 
-    # Heal character
-    hp_change = ch.modify_hp(healing, False, False)
+        # Determine target (from -t or default to own combatant)
+    if target_name:
+        target = combat().get_combatant(target_name)
+    else:
+        target = combat().get_combatant(ch.name)
+
+    if not target:
+        err(f"Could not find combatant: {target_name if target_name else ch.name}")
+
+    # Heal the target
+    hp_change = target.modify_hp(healing, ignore_temp=False, overflow=True)
     desc = f"{formula} = {healing} HP healed.\n\n{hp_change}"
     num = -1
     verb = "uses a"
