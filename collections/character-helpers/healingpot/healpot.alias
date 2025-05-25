@@ -33,7 +33,7 @@ if args[0] == "add":
     action = "adds"
 
 else:
-    err("We haven't gotten there yet ya know.")
+    err("We haven't gotten there yet.")
 
 #Logic of the alias. Check for all the necessary conditions.
 
