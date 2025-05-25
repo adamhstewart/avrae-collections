@@ -79,7 +79,7 @@ elif args[0] == "use":
 
     # Heal the target
     hp_change = target.modify_hp(healing, ignore_temp=False, overflow=True)
-    desc = f"{formula} = {healing} HP healed.\n\n{hp_change}"
+    desc = f"{formula} = {healing} HP healed.\n\n{target}: {hp_change}"
     num = -1
     verb = "uses a"
 
