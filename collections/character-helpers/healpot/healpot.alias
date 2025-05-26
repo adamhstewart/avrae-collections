@@ -17,11 +17,6 @@ else:
 #Create the counter if it doesn't already
 ch.create_cc_nx(cc, 0, None, None, None, None, None, cc, desc)
 
-
-##Check if we are in combat.
-if not c:
-    err('This channel is not in combat.')
-
 # Setup type based on argument.
 if args[0] in ["add", "remove"]:
     action = args[0]  # 'add' or 'remove'
@@ -70,6 +65,10 @@ elif args[0] == "use":
 
         # Determine target (from -t or default to own combatant)
     if target_name:
+        ##Check if we are in combat.
+        if not c:
+            err('This channel is not in combat. To target a combatant, you must be in combat.')
+
         target = combat().get_combatant(target_name[0])
     else:
         target = combat().get_combatant(ch.name)
