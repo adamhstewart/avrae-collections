@@ -60,10 +60,7 @@ elif args[0] == "use":
     result = vroll(formula)
     healing = result.total
 
-    # Subtract 1 potion
-    ch.mod_cc(cc, -1)
-
-        # Determine target (from -t or default to own combatant)
+    # Determine target (from -t or default to own combatant)
     if target_name:
         ##Check if we are in combat.
         if not c:
@@ -71,13 +68,15 @@ elif args[0] == "use":
 
         target = combat().get_combatant(target_name[0])
     else:
-        target = combat().get_combatant(ch.name)
+        target = ch
 
     if not target:
         err(f"Could not find combatant: {target_name if target_name else ch.name}")
 
     # Heal the target
     hp_change = target.modify_hp(healing, ignore_temp=False, overflow=True)
+    # Subtract 1 potion
+    ch.mod_cc(cc, -1)
     desc = f"{formula} = {healing} HP healed.\n\n{target}"
     num = -1
     verb = "uses a"
