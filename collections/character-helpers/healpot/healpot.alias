@@ -74,7 +74,7 @@ elif args[0] == "use":
         err(f"Could not find combatant: {target_name if target_name else ch.name}")
 
     # Heal the target
-    hp_change = target.modify_hp(healing, ignore_temp=False, overflow=True)
+    hp_change = target.modify_hp(healing, False, False)
     # Subtract 1 potion
     ch.mod_cc(cc, -1)
     desc = f"{formula} = {healing} HP healed.\n\n{target.name}: {hp_change}"
@@ -82,7 +82,7 @@ elif args[0] == "use":
     verb = "uses a"
 
 else:
-    err("We haven't gotten there yet.")
+    err("You are missing a command - either add, remove, or use.")
 
 #Logic of the alias. Check for all the necessary conditions.
 
