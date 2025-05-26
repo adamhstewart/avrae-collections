@@ -77,7 +77,7 @@ elif args[0] == "use":
     hp_change = target.modify_hp(healing, ignore_temp=False, overflow=True)
     # Subtract 1 potion
     ch.mod_cc(cc, -1)
-    desc = f"{formula} = {healing} HP healed.\n\n{target}"
+    desc = f"{formula} = {healing} HP healed.\n\n{target.name}: {hp_change}"
     num = -1
     verb = "uses a"
 
