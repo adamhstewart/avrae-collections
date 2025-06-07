@@ -11,13 +11,12 @@ if not c:
 
 ## Establish the target and add the effect
 if "-t" in args:
-    target = parse.get('t')
+    target = parse.last('t')
     t=c.get_combatant(target)
     t.add_effect("Shield Unequipped", duration = 1, passive_effects = {"ac_bonus": -shieldValue})
     output += f" -title '{t.name} doffs their shield!' -desc 'Added the unequipped shield effect!' "
 else:
     c.me.add_effect("Shield Unequipped", duration = 1, passive_effects = {"ac_bonus": -shieldValue})
-    name = c.me.name
     output += f" -title '{name} doffs their shield!' -desc 'Added the unequipped shield effect!' "
 return output
 </drac2>
