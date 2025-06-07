@@ -1,2 +1,2 @@
-{{combat().me.add_effect("Shield Unequipped", duration = 1, passive_effects = {"ac_bonus": int(ch.get_cvar("shieldValue", "2"))}) if combat() and combat().me else ''}}
+{{combat().me.add_effect("Shield Unequipped", duration = 1, passive_effects = {"ac_bonus": int(character().get_cvar("shieldValue", "2"))}) if combat() and combat().me else ''}}
 -f "Added the unequipped shield effect until the start of your next turn."
