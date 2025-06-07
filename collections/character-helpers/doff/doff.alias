@@ -4,7 +4,7 @@ parse = argparse(args)
 c = combat()
 shieldValue = int(ch.get_cvar("shieldValue", "2"))
 
-if not c
+if not c:
     err("This alias requires you to be in combat.")
 
 ## Establish the target and add the effect
