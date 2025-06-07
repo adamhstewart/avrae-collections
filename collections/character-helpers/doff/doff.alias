@@ -4,7 +4,7 @@ parse = argparse(args)
 c = combat()
 ch = character()
 shieldValue = int(ch.get_cvar("shieldValue", "2"))
-output = f'''embed -color {color} -thumb {image} -footer "{ctx.prefix}doff | Set your shield value with {ctx.prefix}cvar shieldValue 3" -f "It takes an bonus action to don your shield after using a 2-handed weapon." '''
+output = f'''embed -color {color} -footer "{ctx.prefix}doff | Set your shield value with {ctx.prefix}cvar shieldValue 3" -f "It takes an bonus action to don your shield after using a 2-handed weapon." '''
 
 if not c:
     err("This alias requires you to be in combat.")
@@ -14,9 +14,9 @@ if "-t" in args:
     target = parse.last('t')
     t=c.get_combatant(target)
     t.add_effect("Shield Unequipped", duration = 1, passive_effects = {"ac_bonus": -shieldValue})
-    output += f" -title '{t.name} doffs their shield!' -desc 'Added the unequipped shield effect!' "
+    output += f" -thumb {t.image} -title '{t.name} doffs their shield!' -desc 'Added the unequipped shield effect!' "
 else:
     c.me.add_effect("Shield Unequipped", duration = 1, passive_effects = {"ac_bonus": -shieldValue})
-    output += f" -title '{name} doffs their shield!' -desc 'Added the unequipped shield effect!' "
+    output += f" -thumb {image} -title '{name} doffs their shield!' -desc 'Added the unequipped shield effect!' "
 return output
 </drac2>
