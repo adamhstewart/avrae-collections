@@ -14,9 +14,9 @@ if "-t" in args:
     target = parse.last('t')
     t=c.get_combatant(target)
     t.add_effect("Shield Unequipped", duration = 1, passive_effects = {"ac_bonus": -shieldValue})
-    output += f" -title '{t.name} doffs their shield!' -desc 'Added the unequipped shield effect (AC Bonus -{shieldValue})!' "
+    output += f" -title '{t.name} doffs their shield!' -desc 'Added the unequipped shield effect (AC Bonus: -{shieldValue}).' "
 else:
     c.me.add_effect("Shield Unequipped", duration = 1, passive_effects = {"ac_bonus": -shieldValue})
-    output += f" -thumb {image} -title '{name} doffs their shield!' -desc 'Added the unequipped shield effect! (AC Bonus -{shieldValue})' "
+    output += f" -thumb {image} -title '{name} doffs their shield!' -desc 'Added the unequipped shield effect (AC Bonus: -{shieldValue}).' "
 return output
 </drac2>
