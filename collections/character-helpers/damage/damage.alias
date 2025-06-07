@@ -7,18 +7,47 @@ ch = character()
 if not c:
     err("This alias requires you to be in combat.")
 
-## Establish the target and add the effect
+# Get target
 if "-t" in args:
-    target = parse.last('t')
-    t=c.get_combatant(target)
+    target = parse.last("t")
+    t = c.get_combatant(target)
 else:
     err("This alias requires a target.")
 
-## Adding or Removing
-if arg[0] == "add"
+# Validate argument count
+if len(args) < 2:
+    err("Usage: !damage add|remove <amount|dice> [type] -t <target>")
 
-elif arg[0] == "remove"
+# First arg: action
+action = args[0].lower()
+if action not in ["add", "remove"]:
+    err("First argument must be 'add' or 'remove'.")
 
+# Second arg: amount or dice
+amount_str = args[1].lower()
+
+# Optional third arg: damage type
+valid_types = [
+    "acid", "bludgeoning", "cold", "fire", "force", "lightning", "necrotic",
+    "piercing", "poison", "psychic", "radiant", "slashing", "thunder"
+]
+damage_type = args[2].lower() if len(args) > 2 else None
+if damage_type and damage_type not in valid_types:
+    err(f"'{damage_type}' is not a valid damage type.")
+
+# Build full dice string
+dice_str = f"{amount_str}[{damage_type}]" if damage_type else amount_str
+
+# Apply or remove damage
+if action == "add":
+    result = t.damage(dice_str)
+    total = result["total"]
+    f"{t.name} takes {total} {'points of ' + damage_type + ' ' if damage_type else ''}damage!"
 else:
-    err("The first argument of this alias must be `add` or `remove`.")
+    # Remove = healing: negate dice_str
+    # Attempt to prefix with "-" unless it's already negative
+    heal_str = f"-{amount_str}" if not amount_str.startswith("-") else amount_str
+    result = t.damage(heal_str)
+    total = result["total"]
+    f"{t.name} is healed for {abs(total)} hit points."
 </drac2>
