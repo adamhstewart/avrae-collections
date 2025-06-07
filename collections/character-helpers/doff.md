@@ -1,0 +1,1 @@
+A snippet to doff your shield.
