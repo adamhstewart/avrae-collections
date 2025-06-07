@@ -2,6 +2,7 @@
 args = &ARGS&
 parse = argparse(args)
 c = combat()
+ch = character()
 shieldValue = int(ch.get_cvar("shieldValue", "2"))
 
 if not c:
