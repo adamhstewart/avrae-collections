@@ -1,0 +1,1 @@
+An alias to add and remove damage types.

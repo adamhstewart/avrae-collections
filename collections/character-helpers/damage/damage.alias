@@ -1,0 +1,24 @@
+<drac2>
+args = &ARGS&
+parse = argparse(args)
+c = combat()
+ch = character()
+
+if not c:
+    err("This alias requires you to be in combat.")
+
+## Establish the target and add the effect
+if "-t" in args:
+    target = parse.last('t')
+    t=c.get_combatant(target)
+else:
+    err("This alias requires a target.")
+
+## Adding or Removing
+if arg[0] == "add"
+
+elif arg[0] == "remove"
+
+else:
+    err("The first argument of this alias must be `add` or `remove`.")
+</drac2>
