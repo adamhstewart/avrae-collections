@@ -4,7 +4,7 @@ parse = argparse(args)
 c = combat()
 ch = character()
 shieldValue = int(ch.get_cvar("shieldValue", "2"))
-output = f" -color <color> -thumb <image> -footer '{ctx.prefix}doff | Set your shield value with {ctx.prefix}cvar shieldValue 3' -f 'It takes an bonus action to don your shield after using a 2-handed weapon.' "
+output = f'''embed -color {color} -thumb {image} -footer "{ctx.prefix}doff | Set your shield value with {ctx.prefix}cvar shieldValue 3" -f "It takes an bonus action to don your shield after using a 2-handed weapon." '''
 
 if not c:
     err("This alias requires you to be in combat.")
