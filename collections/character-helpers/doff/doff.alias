@@ -1,0 +1,19 @@
+<drac2>
+args = &ARGS&
+parse = argparse(args)
+c = combat()
+shieldValue = int(ch.get_cvar("shieldValue", "2"))
+
+if not c
+    err("This alias requires you to be in combat.")
+
+## Establish the target and add the effect
+if "-t" in args:
+    target = parse.get('t')
+    t=c.get_combatant(target)
+    t.add_effect("Shield Unequipped", passive_effects= {"ac_bonus": -shieldValue, "duration":1})
+    output += f" -title '{t.name} doffs their shield!' -desc 'Added the unequipped shield effect!' "
+else:
+    c.me.add_effect("Shield Unequipped", passive_effects= {"ac_bonus": -shieldValue, "duration":1})
+    output += f" -title '{name} doffs their shield!' -desc 'Added the unequipped shield effect!' "
+return output

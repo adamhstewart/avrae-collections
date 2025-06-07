@@ -1,0 +1,1 @@
+An alias to doff your shield according to some homebrew rules.
