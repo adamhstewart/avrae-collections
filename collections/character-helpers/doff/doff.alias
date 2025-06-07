@@ -17,3 +17,4 @@ else:
     c.me.add_effect("Shield Unequipped", passive_effects= {"ac_bonus": -shieldValue, "duration":1})
     output += f" -title '{name} doffs their shield!' -desc 'Added the unequipped shield effect!' "
 return output
+</drac2>
