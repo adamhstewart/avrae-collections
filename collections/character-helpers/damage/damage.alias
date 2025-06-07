@@ -38,16 +38,19 @@ if damage_type and damage_type not in valid_types:
 # Build full dice string
 dice_str = f"{amount_str}[{damage_type}]" if damage_type else amount_str
 
+output = f'''embed -color {color} -footer "{ctx.prefix}damage" -f "The damage has been done." '''
+
 # Apply or remove damage
 if action == "add":
     result = t.damage(dice_str)
     total = result["total"]
-    f"{t.name} takes {total} {'points of ' + damage_type + ' ' if damage_type else ''}damage!"
+    output +=f"{t.name} takes {total} {'points of ' + damage_type + ' ' if damage_type else ''}damage!"
 else:
     # Remove = healing: negate dice_str
     # Attempt to prefix with "-" unless it's already negative
     heal_str = f"-{amount_str}" if not amount_str.startswith("-") else amount_str
     result = t.damage(heal_str)
     total = result["total"]
-    f"{t.name} is healed for {abs(total)} hit points."
+    output +=f"{t.name} is healed for {abs(total)} hit points."
+return output
 </drac2>
