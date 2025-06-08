@@ -14,8 +14,19 @@ if "-t" in args:
 else:
     err("This alias requires a target.")
 
+# Collect unnamed (positional) arguments only
+pos = []
+skip = False
+for i, a in enumerate(args):
+    if skip:
+        skip = False
+        continue
+    if a.startswith("-"):
+        skip = True  # skip the value after -flag
+        continue
+    pos.append(a)
+
 # Validate argument count
-pos = [a for a in args if not a.startswith("-")]
 if len(pos) < 2:
     err("Usage: !damage add|remove <amount|dice> [type] -t <target>")
 
