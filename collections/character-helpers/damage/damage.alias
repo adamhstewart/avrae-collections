@@ -44,13 +44,13 @@ output = f'''embed -color {color} -footer "{ctx.prefix}damage" -f "The damage ha
 if action == "add":
     result = t.damage(dice_str)
     total = result["total"]
-    output +=f"{t.name} takes {total} {'points of ' + damage_type + ' ' if damage_type else ''}damage!"
+    output +=f"-title '{t.name} takes {total} {'points of ' + damage_type + ' ' if damage_type else ''}damage!' -desc '{amount_str} = {total}[{damage_type}].' "
 else:
     # Remove = healing: negate dice_str
     # Attempt to prefix with "-" unless it's already negative
     heal_str = f"-{amount_str}" if not amount_str.startswith("-") else amount_str
     result = t.damage(heal_str)
     total = result["total"]
-    output +=f"{t.name} is healed for {abs(total)} hit points."
+    output +=f" -title '{t.name} is healed for {abs(total)} hit points.' -desc '{amount_str} = {total}[{damage_type}].' "
 return output
 </drac2>
