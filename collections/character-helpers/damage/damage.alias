@@ -15,23 +15,24 @@ else:
     err("This alias requires a target.")
 
 # Validate argument count
-if len(args) < 2:
+pos = parse.positional
+if len(pos) < 2:
     err("Usage: !damage add|remove <amount|dice> [type] -t <target>")
 
 # First arg: action
-action = args[0].lower()
+action = pos[0].lower()
 if action not in ["add", "remove"]:
     err("First argument must be 'add' or 'remove'.")
 
 # Second arg: amount or dice
-amount_str = args[1].lower()
+amount_str = pos[1].lower()
 
 # Optional third arg: damage type
 valid_types = [
     "acid", "bludgeoning", "cold", "fire", "force", "lightning", "necrotic",
     "piercing", "poison", "psychic", "radiant", "slashing", "thunder"
 ]
-damage_type = args[2].lower() if len(args) > 2 else None
+damage_type = pos[2].lower() if len(pos) > 2 else None
 if damage_type and damage_type not in valid_types:
     err(f"'{damage_type}' is not a valid damage type.")
 
