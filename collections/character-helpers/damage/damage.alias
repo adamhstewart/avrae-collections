@@ -9,13 +9,13 @@ if not c:
 
 # Get target
 if "-t" in args:
-    target = parse.last("t")
+    target = parse.get("t")
     t = c.get_combatant(target)
 else:
     err("This alias requires a target.")
 
 # Validate argument count
-pos = parse.unnamed
+pos = [a for a in args if not a.startswith("-")]
 if len(pos) < 2:
     err("Usage: !damage add|remove <amount|dice> [type] -t <target>")
 
