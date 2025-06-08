@@ -15,7 +15,7 @@ else:
     err("This alias requires a target.")
 
 # Validate argument count
-pos = parse.positional
+pos = parse.unnamed
 if len(pos) < 2:
     err("Usage: !damage add|remove <amount|dice> [type] -t <target>")
 
