@@ -9,7 +9,7 @@ if not c:
 
 # Get target
 if "-t" in args:
-    target = parse.get("t")
+    target = parse.last("t")
     t = c.get_combatant(target)
 else:
     err("This alias requires a target.")
