@@ -38,17 +38,25 @@ if action not in ["add", "remove"]:
 # Second arg: amount or dice
 amount_str = pos[1].lower()
 
-# Optional third arg: damage type
-valid_types = [
-    "acid", "bludgeoning", "cold", "fire", "force", "lightning", "necrotic",
-    "piercing", "poison", "psychic", "radiant", "slashing", "thunder"
-]
-damage_type = pos[2].lower() if len(pos) > 2 else None
-if damage_type and damage_type not in valid_types:
-    err(f"'{damage_type}' is not a valid damage type.")
+# Combine all remaining positional args after amount as a compound damage type
+damage_type = " ".join(pos[2:]).lower() if len(pos) > 2 else None
 
-# Build full dice string
-dice_str = f"{amount_str}[{damage_type}]" if damage_type else amount_str
+# Validate against known full compound types
+valid_keywords = [
+    "acid", "bludgeoning", "cold", "fire", "force", "lightning", "necrotic",
+    "piercing", "poison", "psychic", "radiant", "slashing", "thunder",
+    "magical", "silvered", "adamantine", "nonmagical"
+]
+
+if damage_type:
+    # Confirm all words are individually valid
+    for word in damage_type.split():
+        if word not in valid_keywords:
+            err(f"'{word}' is not a valid damage keyword.")
+
+    dice_str = f"{amount_str}[{damage_type}]"
+else:
+    dice_str = amount_str
 
 output = f'''embed -color {color} -footer "{ctx.prefix}damage" -f "The damage has been done." '''
 
