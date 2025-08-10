@@ -14,18 +14,17 @@ if not c:
 # Setup type based on argument.
 if "heavenly" in args:
     type = "Heavenly Wings"
-    dbonus = "2[radiant]"
+    dbonus = f'{proficiencyBonus}[radiant]'
     desc = "Two spectral wings sprout from your back temporarily. Until the transformation ends, you have a Fly Speed equal to your Speed."
     sdesc = "You can fly at your speed until the end of the duration."
 elif "radiance" in args:
     type = "Inner Radiance"
-    dbonus = "2[radiant]"
-    rbonus = proficiencyBonus
+    dbonus = f'{proficiencyBonus}[radiant]'
     desc = "Searing light temporarily radiates from your eyes and mouth. For the duration, you shed Bright Light in a 10-foot radius and Dim Light for an additional 10 feet, and at the end of each of your turns, each creature within 10 feet of you takes Radiant damage equal to your Proficiency Bonus."
-    sdesc = f'Each creature within 10ft takes +{rbonus} Radiant damage.'
+    sdesc = f'Each creature within 10ft takes +{proficiencyBonus} Radiant damage.'
 elif "necrotic" in args:
     type = "Necrotic Shroud"
-    dbonus = "2[necrotic]"
+    dbonus = f'{proficiencyBonus}[necrotic]'
     csave = 8+ proficiencyBonus + charismaMod
     desc = "Your eyes briefly become pools of darkness, and flightless wings sprout from your back temporarily. Creatures other than your allies within 10 feet of you must succeed on a Charisma saving throw (DC 8 plus your Charisma modifier and Proficiency Bonus) or have the Frightened condition until the end of your next turn."
     sdesc = f'Enemy creatures within 10ft must succeed on a DC {csave} Charisma saving throw or have the Frightened condition until end of your next turn.'
