@@ -1,0 +1,12 @@
+{{c = 'Magefire Arrows'}}
+{{C, F, arrowF, track = 'Used ' + c, 'Fired ' + c, get('magefireF', 0) + 1, get_svar('trackShots') or get('trackShots')}}
+{{character().create_cc_nx(C, 0)}}
+{{character().create_cc_nx(F, 0) if track else ''}}
+{{err(f'No "{c}" counter found. Use `!cc create "{c}" -max <amount>` to create one.') if not character().cc_exists(c) else ''}}
+{{v = character().get_cc(c) > 0}}
+{{miss = get('miss', 0) + (not v)}}
+{{character().mod_cc(c, -1) if v else f'miss{miss}'}}
+{{character().mod_cc(F, 1) if v and track else ''}}
+{{f'-phrase "{"Using a magefire arrow" if arrowF == 1 else "...and another one"} ({character().get_cc(c)} remaining)"'}}
+{{'-d "1d6 [fire]"' if v else ''}}
+{{'' if arrowF > 1 else '-f "Magefire Arrows|Magical arrows that deal an extra 1d6 fire damage and can\'t be reused once fired."'}}
