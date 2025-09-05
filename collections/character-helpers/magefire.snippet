@@ -1,6 +1,5 @@
 {{c = 'Magefire Arrows'}}
-{{C, F, arrowF, track = 'Used ' + c, 'Fired ' + c, get('magefireF', 0) + 1, get_svar('trackShots') or get('trackShots')}}
-{{character().create_cc_nx(C, 0)}}
+{{F, arrowF, track = 'Fired ' + c, get('magefireF', 0) + 1, get_svar('trackShots') or get('trackShots')}}
 {{character().create_cc_nx(F, 0) if track else ''}}
 {{err(f'No "{c}" counter found. Use `!cc create "{c}" -max <amount>` to create one.') if not character().cc_exists(c) else ''}}
 {{v = character().get_cc(c) > 0}}
