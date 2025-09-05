@@ -9,6 +9,6 @@
 {{attack_stat = get('dexterityMod', 0) if get('rangedattackstat', 'dex').lower() in ['dex', 'dexterity'] else get('strengthMod', 0)}}
 {{save_dc = 8 + proficiencyBonus + attack_stat}}
 {{f'-phrase "{"Using an ice arrow" if arrowF == 1 else "...and another one"} ({character().get_cc(c)} remaining)"' if v else f'-phrase "No {c} remaining!"'}}
-{{'-mi 0' if v else ''}}
-{{f'-save "Constitution|{save_dc}|Ice Arrow Effect|On a failed save, your movement is reduced by 10 feet until the end of the attacker\'s next turn."' if v else ''}}
+{{'-d "*0"' if v else ''}}
+{{f'-f "Ice Arrow Effect|Target must make a DC {save_dc} Constitution saving throw or have their movement reduced by 10 feet until the end of your next turn."' if v else ''}}
 {{'' if arrowF > 1 else '-f "Ice Arrows|Magical arrows that remove base damage but force a Constitution save on hit."'}}
