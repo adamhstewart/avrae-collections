@@ -8,8 +8,8 @@ A snippet for tracking magical ammunition that deals extra fire damage and canno
 - Arrows are consumed on use (cannot be recovered)
 - Requires manual counter creation with desired amount
 
-**Setup:** 
-Create a counter first: `!cc create "Magefire Arrows" -max <amount>`
+**Setup:**
+Create a counter first: `!cc create "Magefire Arrows"`
 
-**Usage:** 
-Use this snippet when making ranged attacks with Magefire Arrows to automatically track ammunition and add fire damage.
+**Usage:**
+Use this snippet when making ranged attacks with Magefire Arrows to automatically track ammunition and add fire damage,
