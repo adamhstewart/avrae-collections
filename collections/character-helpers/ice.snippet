@@ -1,0 +1,14 @@
+{{c = 'Ice Arrows'}}
+{{F, arrowF, track = 'Fired ' + c, get('iceF', 0) + 1, get_svar('trackShots') or get('trackShots')}}
+{{character().create_cc_nx(F, 0) if track else ''}}
+{{err(f'No "{c}" counter found. Use `!cc create "{c}" -max <amount>` to create one.') if not character().cc_exists(c) else ''}}
+{{v = character().get_cc(c) > 0}}
+{{miss = get('miss', 0) + (not v)}}
+{{character().mod_cc(c, -1) if v else f'miss{miss}'}}
+{{character().mod_cc(F, 1) if v and track else ''}}
+{{attack_stat = get('dexterityMod', 0) if get('rangedattackstat', 'dex').lower() in ['dex', 'dexterity'] else get('strengthMod', 0)}}
+{{save_dc = 8 + proficiencyBonus + attack_stat}}
+{{f'-phrase "{"Using an ice arrow" if arrowF == 1 else "...and another one"} ({character().get_cc(c)} remaining)"' if v else f'-phrase "No {c} remaining!"'}}
+{{'-d "-[dexterity]" -d "-[strength]"' if v else ''}}
+{{f'-f "Ice Arrow Effect|On hit, target must make a DC {save_dc} Constitution saving throw or have their movement reduced by 10 feet until the end of your next turn."' if v else ''}}
+{{'' if arrowF > 1 else '-f "Ice Arrows|Magical arrows that remove base damage but force a Constitution save on hit."'}}
