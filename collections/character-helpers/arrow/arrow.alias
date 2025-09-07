@@ -1,0 +1,64 @@
+embed
+<drac2>
+args = &ARGS&
+pargs = argparse(args)
+
+# Get weapon, arrow type, and target
+weapon = args[0] if args else None
+arrow_type = args[1] if len(args) > 1 else None
+target = pargs.last('t', None)
+
+if not weapon:
+    return f'-title "Arrow Usage" -desc "Usage: `!arrow <weapon> <arrow_type> -t <target>`\\nArrow types: magefire, ice"'
+
+if not arrow_type:
+    return f'-title "Arrow Error" -desc "Please specify arrow type: magefire or ice"'
+
+arrow_type = arrow_type.lower()
+
+# Validate arrow type
+if arrow_type not in ['magefire', 'ice']:
+    return f'-title "Arrow Error" -desc "Invalid arrow type. Available: magefire, ice"'
+
+# Set up counter names
+counter_name = f"{arrow_type.title()} Arrows"
+fired_counter = f"Fired {counter_name}"
+
+# Check if counter exists
+if not character().cc_exists(counter_name):
+    return f'-title "Arrow Error" -desc "No \\"{counter_name}\\" counter found. Use `!cc create \\"{counter_name}\\" -max <amount>` to create one."'
+
+# Check if we have arrows
+if character().get_cc(counter_name).value <= 0:
+    return f'-title "Out of Arrows" -desc "You have no {counter_name} remaining!"'
+
+# Use an arrow
+character().mod_cc(counter_name, -1)
+remaining = character().get_cc(counter_name).value
+
+# Track fired arrows if tracking is enabled
+track_shots = get_svar('trackShots') or get('trackShots')
+if track_shots:
+    character().create_cc_nx(fired_counter, 0)
+    character().mod_cc(fired_counter, 1)
+
+# Get attack modifiers
+attack_stat = get('dexterityMod', 0) if get('rangedattackstat', 'dex').lower() in ['dex', 'dexterity'] else get('strengthMod', 0)
+prof_bonus = proficiencyBonus
+
+# Build attack command based on arrow type
+base_cmd = f"attack {weapon}"
+if target:
+    base_cmd += f" -t {target}"
+
+if arrow_type == "magefire":
+    # Magefire: adds 1d6 fire damage
+    attack_cmd = f'{base_cmd} -d "1d6 [fire]" -f "Magefire Arrow|Deals an extra 1d6 fire damage. ({remaining} remaining)"'
+    
+elif arrow_type == "ice":
+    # Ice: removes base damage, forces Con save
+    save_dc = 8 + prof_bonus + attack_stat
+    attack_cmd = f'{base_cmd} -d "*0" -f "Ice Arrow Effect|Target must make a DC {save_dc} Constitution saving throw or have their movement reduced by 10 feet until the end of your next turn. ({remaining} remaining)"'
+
+return attack_cmd
+</drac2>
