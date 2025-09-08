@@ -29,12 +29,12 @@ if not character().cc_exists(counter_name):
     return f'-title "Arrow Error" -desc "No \\"{counter_name}\\" counter found. Use `!cc create \\"{counter_name}\\" -max <amount>` to create one."'
 
 # Check if we have arrows
-if character().get_cc(counter_name).value <= 0:
+if character().get_cc(counter_name) <= 0:
     return f'-title "Out of Arrows" -desc "You have no {counter_name} remaining!"'
 
 # Use an arrow
 character().mod_cc(counter_name, -1)
-remaining = character().get_cc(counter_name).value
+remaining = character().get_cc(counter_name)
 
 # Track fired arrows if tracking is enabled
 track_shots = get_svar('trackShots') or get('trackShots')
