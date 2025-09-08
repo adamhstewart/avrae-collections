@@ -47,14 +47,14 @@ attack_stat = get('dexterityMod', 0) if get('rangedattackstat', 'dex').lower() i
 prof_bonus = proficiencyBonus
 
 # Build attack command based on arrow type
-base_cmd = f"attack {weapon}"
+base_cmd = f"!attack {weapon}"
 if target:
     base_cmd += f" -t {target}"
 
 if arrow_type == "magefire":
     # Magefire: adds 1d6 fire damage
     attack_cmd = f'{base_cmd} -d "1d6 [fire]" -f "Magefire Arrow|Deals an extra 1d6 fire damage. ({remaining} remaining)"'
-    
+
 elif arrow_type == "ice":
     # Ice: removes base damage, forces Con save
     save_dc = 8 + prof_bonus + attack_stat
