@@ -46,19 +46,20 @@ if track_shots:
 attack_stat = get('dexterityMod', 0) if get('rangedattackstat', 'dex').lower() in ['dex', 'dexterity'] else get('strengthMod', 0)
 prof_bonus = proficiencyBonus
 
-# Build attack command based on arrow type
-base_cmd = f"!attack {weapon}"
+# Build attack arguments list  
+attack_args = [weapon]
 if target:
-    base_cmd += f" -t {target}"
+    attack_args.extend(["-t", target])
 
 if arrow_type == "magefire":
     # Magefire: adds 1d6 fire damage
-    attack_cmd = f'{base_cmd} -d "1d6 [fire]" -f "Magefire Arrow|Deals an extra 1d6 fire damage. ({remaining} remaining)"'
+    attack_args.extend(["-d", "1d6 [fire]", "-f", f"Magefire Arrow|Deals an extra 1d6 fire damage. ({remaining} remaining)"])
 
 elif arrow_type == "ice":
     # Ice: removes base damage, forces Con save
     save_dc = 8 + prof_bonus + attack_stat
-    attack_cmd = f'{base_cmd} -d "*0" -f "Ice Arrow Effect|Target must make a DC {save_dc} Constitution saving throw or have their movement reduced by 10 feet until the end of your next turn. ({remaining} remaining)"'
+    attack_args.extend(["-d", "*0", "-f", f"Ice Arrow Effect|Target must make a DC {save_dc} Constitution saving throw or have their movement reduced by 10 feet until the end of your next turn. ({remaining} remaining)"])
 
-return attack_cmd
+# Execute the attack by returning just the command without quotes
+return "attack " + " ".join(f'"{arg}"' if " " in arg else arg for arg in attack_args)
 </drac2>
