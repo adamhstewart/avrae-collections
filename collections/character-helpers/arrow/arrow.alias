@@ -54,7 +54,42 @@ if arrow_type == "magefire":
 elif arrow_type == "ice":
     # Ice: removes base damage, forces Con save  
     save_dc = 8 + prof_bonus + attack_stat
-    extra_args = f'-d "*0" -f "Ice Arrow Effect|Target must make a DC {save_dc} Constitution saving throw or have their movement reduced by 10 feet until the end of your next turn. ({remaining} remaining)"'
+    
+    # Create a temporary attack automation for ice arrow
+    automation_json = f'''{{
+        "name": "Ice Arrow",
+        "automation": [
+            {{
+                "type": "target",
+                "target": "each",
+                "effects": [
+                    {{
+                        "type": "damage",
+                        "damage": "0"
+                    }},
+                    {{
+                        "type": "save",
+                        "stat": "con",
+                        "dc": "{save_dc}",
+                        "fail": [
+                            {{
+                                "type": "ieffect",
+                                "name": "Slowed by Ice",
+                                "duration": 1,
+                                "effects": "-10 feet movement",
+                                "desc": "Your movement is reduced by 10 feet until the end of the attacker's next turn."
+                            }}
+                        ]
+                    }}
+                ]
+            }}
+        ]
+    }}'''
+    
+    # Store the automation temporarily and use "Ice Arrow" as weapon name
+    set_uvar("temp_ice_automation", automation_json)
+    weapon = "Ice Arrow"
+    extra_args = f'-f "Ice Arrow Effect|Using ice arrow with Constitution save DC {save_dc}. ({remaining} remaining)"'
 
 # Set up command parts
 cmd_parts = [weapon]
