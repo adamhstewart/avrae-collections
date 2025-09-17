@@ -52,9 +52,9 @@ if arrow_type == "magefire":
     # Magefire: adds 1d6 fire damage
     extra_args = f'-d "1d6 [fire]" -f "Magefire Arrow|Deals an extra 1d6 fire damage. ({remaining} remaining)"'
 elif arrow_type == "ice":
-    # Ice: removes base damage, forces Con save  
+    # Ice: removes base damage, forces Con save
     save_dc = 8 + prof_bonus + attack_stat
-    
+
     # Create a temporary attack automation for ice arrow
     automation_json = f'''{{
         "name": "Ice Arrow",
@@ -85,7 +85,7 @@ elif arrow_type == "ice":
             }}
         ]
     }}'''
-    
+
     # Store the automation temporarily and use "Ice Arrow" as weapon name
     set_uvar("temp_ice_automation", automation_json)
     weapon = "Ice Arrow"
