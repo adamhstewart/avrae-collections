@@ -57,7 +57,7 @@ elif arrow_type == "ice":
 
     # Create a temporary attack automation for ice arrow
     automation_json = f'''{{
-        "name": "Ice Arrow",
+        "name": "Ice Arrow Special",
         "automation": [
             {{
                 "type": "target",
@@ -88,7 +88,7 @@ elif arrow_type == "ice":
 
     # Store the automation temporarily and use "Ice Arrow" as weapon name
     set_uvar("temp_ice_automation", automation_json)
-    weapon = "Ice Arrow"
+    weapon = "Ice Arrow Special"
     extra_args = f'-f "Ice Arrow Effect|Using ice arrow with Constitution save DC {save_dc}. ({remaining} remaining)"'
 
 # Set up command parts
