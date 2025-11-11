@@ -1,7 +1,9 @@
 <drac2>
 # Define variables
 args = &ARGS&
-valid_types = ['acid', 'cold', 'fire', 'poison', 'lightning', 'thunder', 'force', 'psychic', 'necrotic']
+valid_types = ['acid', 'cold', 'fire', 'poison', 'lightning', 'thunder', 'force', 'psychic', 'necrotic', 'radiant']
+ch = character()
+co = combat()
 
 # Check if damage type was provided
 if not args:
@@ -18,9 +20,18 @@ effect_name = f"Blade Oil ({damage_type.title()})"
 effect_duration = 10
 effect_desc = f"Your blade is coated with {damage_type} oil. Attacks deal an additional 1d4 {damage_type} damage."
 
-# Apply the effect with attack bonus
+# Apply the effect
+if co and co.me:
+    co.me.add_effect(effect_name, duration=effect_duration, desc=effect_desc)
+    target_name = co.me.name
+else:
+    ch.add_effect(effect_name, duration=effect_duration, desc=effect_desc)
+    target_name = name
+
+# Build the output
 T = f"{name} Applies Blade Oil"
 D = f"You carefully coat your blade with {damage_type} oil. For the next minute, your attacks will deal an additional 1d4 {damage_type} damage."
+F = f"Effect Applied|Added effect '{effect_name}' to {target_name} [1 minute]"
 
-return f'effect "{effect_name}" -dur {effect_duration} -desc "{effect_desc}" -thumb {image} -title "{T}" -desc "{D}" -color {color}'
+return f'embed -title "{T}" -desc "{D}" -f "{F}" -thumb {image} -color {color}'
 </drac2>
