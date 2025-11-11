@@ -1,0 +1,1 @@
+Adds 1d4 damage from active blade oil effect to your attacks.
