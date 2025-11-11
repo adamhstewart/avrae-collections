@@ -22,5 +22,5 @@ effect_desc = f"Your blade is coated with {damage_type} oil. Attacks deal an add
 T = f"{name} Applies Blade Oil"
 D = f"You carefully coat your blade with {damage_type} oil. For the next minute, your attacks will deal an additional 1d4 {damage_type} damage."
 
-return f'i effect "{effect_name}" -dur {effect_duration} -attack "1d4[{damage_type}]|{damage_type}" -desc "{effect_desc}" -thumb {image} -title "{T}" -desc "{D}" -color {color}'
+return f'effect "{effect_name}" -dur {effect_duration} -attack "1d4[{damage_type}]|{damage_type}" -desc "{effect_desc}" -thumb {image} -title "{T}" -desc "{D}" -color {color}'
 </drac2>
