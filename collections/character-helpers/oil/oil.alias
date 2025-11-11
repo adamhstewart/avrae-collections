@@ -1,0 +1,26 @@
+<drac2>
+# Define variables
+args = &ARGS&
+valid_types = ['acid', 'cold', 'fire', 'poison', 'lightning', 'thunder', 'force', 'psychic', 'necrotic']
+
+# Check if damage type was provided
+if not args:
+    err("Please specify a damage type: acid, cold, fire, poison, lightning, thunder, force, psychic, or necrotic")
+
+damage_type = args[0].lower()
+
+# Validate damage type
+if damage_type not in valid_types:
+    err(f'"{args[0]}" is not a valid damage type. Valid types are: {", ".join(valid_types)}')
+
+# Create the effect
+effect_name = f"Blade Oil ({damage_type.title()})"
+effect_duration = 10
+effect_desc = f"Your blade is coated with {damage_type} oil. Attacks deal an additional 1d4 {damage_type} damage."
+
+# Apply the effect with attack bonus
+T = f"{name} Applies Blade Oil"
+D = f"You carefully coat your blade with {damage_type} oil. For the next minute, your attacks will deal an additional 1d4 {damage_type} damage."
+
+return f'i effect "{effect_name}" -dur {effect_duration} -attack "1d4[{damage_type}]|{damage_type}" -desc "{effect_desc}" -thumb {image} -title "{T}" -desc "{D}" -color {color}'
+</drac2>

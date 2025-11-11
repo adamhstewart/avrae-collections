@@ -1,0 +1,1 @@
+Apply blade oil to your weapon and use it in attacks for extra damage.

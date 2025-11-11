@@ -1,0 +1,20 @@
+<drac2>
+# Find blade oil effect
+effects = combat().me.effects if combat() else character().active_effects()
+oil_effect = None
+damage_type = None
+
+# Search for any blade oil effect
+for effect in effects:
+    if effect.name.startswith("Blade Oil (") and effect.name.endswith(")"):
+        oil_effect = effect
+        # Extract damage type from effect name (between parentheses)
+        damage_type = effect.name[11:-1].lower()
+        break
+
+# If oil effect exists, add the damage
+if oil_effect and damage_type:
+    return f'-d "1d4[{damage_type}]" -f "Blade Oil|Your weapon is coated with {damage_type} oil, dealing extra damage!"'
+else:
+    return ""
+</drac2>
