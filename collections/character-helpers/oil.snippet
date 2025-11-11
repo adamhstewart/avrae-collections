@@ -12,6 +12,7 @@ for effect in effects:
         damage_type = effect.name[11:-1].lower()
         break
 
+
 # If oil effect exists, add the damage
 if oil_effect and damage_type:
     return f'-d "1d4[{damage_type}]" -f "Blade Oil|Your weapon is coated with {damage_type} oil, dealing extra damage!"'
