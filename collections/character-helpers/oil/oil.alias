@@ -37,8 +37,8 @@ if target_name_arg:
 
     target.add_effect(effect_name, duration=effect_duration, desc=effect_desc)
     target_name = target.name
-    T = f"{name} Applies Blade Oil to {target_name}"
-    D = f"{name} carefully coats {target_name}'s blade with {damage_type} oil. For the next minute, their attacks will deal an additional 1d4 {damage_type} damage."
+    T = f"{target_name} Applies Blade Oil"
+    D = f"You carefully coat your blade with {damage_type} oil. For the next minute, your attacks will deal an additional 1d4 {damage_type} damage."
 else:
     # No target specified, apply to self
     if co and co.me:
