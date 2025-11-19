@@ -1,25 +1,39 @@
 <drac2>
-# Find blade oil effect
-# Try character first (works for attacks), fall back to combat.me, then empty list
-try:
-    effects = character().active_effects()
-except:
-    effects = combat().me.effects if combat() and combat().me else []
 oil_effect = None
 damage_type = None
 
-# Search for any blade oil effect
-for effect in effects:
-    if effect.name.startswith("Blade Oil (") and effect.name.endswith(")"):
-        oil_effect = effect
-        # Extract damage type from effect name (between parentheses)
-        damage_type = effect.name[11:-1].lower()
-        break
+# Try to get character context
+try:
+    ch = character()
+    has_char = True
+except:
+    has_char = False
 
+# Auto-detect blade oil effect if we have character context
+if has_char and combat() and combat().me:
+    effects = combat().me.effects
+    for effect in effects:
+        if effect.name.startswith("Blade Oil (") and effect.name.endswith(")"):
+            oil_effect = effect
+            damage_type = effect.name[11:-1].lower()
+            break
 
-# If oil effect exists, add the damage
-if oil_effect and damage_type:
+# If no effect found, check for manual damage type specification in arguments
+if not damage_type:
+    args = &ARGS&
+    for i, arg in enumerate(args):
+        if arg.lower().startswith("oil") and len(arg) > 3:
+            # Extract damage type from argument like "oilFire" -> "fire"
+            damage_type = arg[3:].lower()
+            break
+
+# Apply damage if we have a damage type
+if damage_type:
     return f'-d "1d4[{damage_type}]" -f "Blade Oil|Your weapon is coated with {damage_type} oil, dealing extra damage!"'
 else:
-    return ""
+    # No effect found and no manual specification
+    if not has_char:
+        return '-f "Blade Oil :warning:|When using this snippet for another combatant, specify the damage type with `oilFire`, `oilCold`, etc. immediately after `oil` in your attack.\\nExample: `!i aoo CharacterName attack oil oilRadiant`"'
+    else:
+        return ""
 </drac2>
