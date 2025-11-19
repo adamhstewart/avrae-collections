@@ -1,6 +1,10 @@
 <drac2>
 # Find blade oil effect
-effects = character().active_effects()
+# Try character first (works for attacks), fall back to combat.me, then empty list
+try:
+    effects = character().active_effects()
+except:
+    effects = combat().me.effects if combat() and combat().me else []
 oil_effect = None
 damage_type = None
 
