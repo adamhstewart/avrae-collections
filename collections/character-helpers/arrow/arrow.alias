@@ -1,102 +1,191 @@
-multiline
 <drac2>
-# Parse arguments
-args = &ARGS&
-pargs = argparse(args)
+al_name = 'arrow'
+footer = f'!{al_name} ? | Shoot special arrows with your bows!'
 
-# Get weapon, arrow type, and target
-weapon = args[0] if args else None
-arrow_type = args[1] if len(args) > 1 else None
-target = pargs.last('t', None)
+using(jh='65a30ab9-540c-4bdf-86ce-7af4760604a9')
+using(wmodlib='3ca2e3aa-f3e6-4efe-bee8-eaaedaef6f7d')
+using(argprompt='f3dfc147-7804-4ade-ac94-01038f706fc8')
+jh.setup(
+        al_name=al_name,
+        footer=footer,
+        )
+wmodlib.setup(
+        al_name=al_name,
+        prompt_ambiguous=True,
+        )
+argprompt.setup(
+        cvar_name='arrowMetadata',
+        timeout=30,
+        )
 
-if not weapon:
-    err("Usage: `!arrow <weapon> <arrow_type> -t <target>`\nArrow types: magefire, ice")
+ch = character()
+co = combat()
 
-if not arrow_type:
-    err("Please specify arrow type: magefire or ice")
+args, sels = argprompt.handle(&ARGS&)
+p_args = argparse(args)
 
-arrow_type = arrow_type.lower()
+def escape(s):
+    return s.replace('"', '\\"')
 
-# Validate arrow type
-if arrow_type not in ['magefire', 'ice']:
-    err("Invalid arrow type. Available: magefire, ice")
+# Alias begins here
+if not args or args[0] in ['?', 'h', 'help']:
+    return jh.embed(
+        title=f'Alias Manual for Expanded Arrows (ER)',
+        desc=(f'Shoots arrows with your existing weapon, automating [Enter Ravenloft '
+              f'Expanded Arrow](https://drive.google.com/file/d/1oThtDdGdEc5Z1VUDzjnymeXpj0W06a1N/view).\n'
+              f'Use this to replace the initial `!a` in your attack, keeping the rest the same.\n'
+              f'So to attack a hexed Goblin with a Blinding Arrow from your Shortbow +1, you can do:\n'
+              f'`!{al_name} "Shortbow +1" blind -t go hex`'),
+        fields=[{'title':'__Usage__',
+                 'body':(f'`!{al_name} weaponName arrowType <usual attack args> (nodmg)`\n'
+                         f'* This will use the weapon to determine the base effect for the attack\n'
+                         f'* It will use all the normal automation for the weapon, while also adding the automation '
+                         f'for the arrows\n'
+                         f'* `arrow type` is the arrow type to be used\n'
+                         f'  For a list of available arrow types, see `!{al_name} list`\n'
+                         f'* Other snippets can be used as normal, like the `hex` example above\n'
+                         f'* `nodmg` is used if you want to deal no damage with this arrow, only applying the effects '
+                         f'(if any)\n\n'
+                         f'`!{al_name} list`\n'
+                         f'* Lists the available arrow types\n\n'
+                         f'`!{al_name} config (track|notrack) (-dc dc) (reset)`\n'
+                         f'* Use this to configure how the alias behaves, e.g., to not do arrow management)\n'
+                         f'* Without further arguments, `!{al_name} config` will list the available configuration '
+                         f'options and what they do'
+                         )},
+                {'title':'Arrow Management',
+                 'body':(f'This alias uses custom counters (CCs) to track the arrows you have, as well as the arrows '
+                         f'you have used (for `!collect` purposes). To set the CCs, you can use the following '
+                         f'alternatives:\n'
+                         f'* `!quiver setup <arrow type> <arrow type> ... (nostore)`\n'
+                         f'  The recommended way. It sets up the CCs for the specified arrow types.\n'
+                         f'  The `nostore` optional argument skips making the Stored arrows CCs.\n'
+                         f'  For example, to create the required CCs for these four arrow types:\n'
+                         f'> `!quiver setup fire explosive blinding cork`\n'
+                         f'* Make your own CCs\n'
+                         f'  Make one for each arrow type, With the name same as the arrow type, and another one with '
+                         f' "Used" in front (e.g., "Used Corkscrew Arrows") to track the used ones to recover.\n'
+                         f'  Some arrows cannot be recovered, in those cases, no need to make the Used counter.\n'
+                         f'* Opt out of arrow management\n'
+                         f'  You can opt out of arrow management by doing the following:\n'
+                         f'> `!{al_name} config notrack`\n'
+                         f'* __Stock Check__. You can check your arrows using the server `!hud` alias:\n'
+                         f'> `!hud`'
+                         )},
+                {'title':'See Also',
+                 'body':(f'* `!{al_name}` for current active character\n'
+                         f'* ~~`!iarrow` for current combatant~~ (coming soon!)\n'
+                         f'* ~~`!rarrow` for off-turn combatant~~ (coming soon!)\n\n'
+                         f'Designed to be similar to `!a`, `!i a`, and `!i oa`'
+                         )},
+                 ],
+        f_thumb=False,
+        )
+if args[0] == 'list':
+    arrow_types = load_json(get_gvar("9c5a97b4-450c-441a-850e-466a7b510389"))
+    arrow_s = []
+    for arrow_name, arrow_data in arrow_types.items():
+        arrow_disp = arrow_data.get('disp', arrow_name)
+        props = []
+        if arrow_data.get('recover', 'none') == 'half':
+            props.append('½')
+        elif arrow_data.get('recover', 'none') == 'halfmiss':
+            props.append('½ miss')
+        if arrow_data.get('magical', False):
+            props.append(':magic_wand:')
+        if props:
+            arrow_disp = f'{arrow_disp} ({", ".join(props)})'
+        arrow_s.append(arrow_disp)
+    arrow_s = '\n* '.join(['']+arrow_s)
+    return jh.embed(
+        title='List of Expanded Arrows (ER)',
+        desc=(f'The underlined part will be recognized as the full name of the arrows as well.\n'
+              f'In brackets, "½" means recover half, "½ miss" means recover half only on miss, and :magic_wand: means '
+              f'magical.{arrow_s}'
+              ),
+        f_thumb=False,
+        )
 
-# Set up counter names
-counter_name = f"{arrow_type.title()} Arrows"
-fired_counter = f"Fired {counter_name}"
+config_cvar_name = 'arrowConfig'
+if args[0] == 'config':
+    fs = []
+    k_args, l_args = jh.take_args(args, {'notrack':False, 'track':False, '-dc':True, 'reset':False})
+    if len(args) == 1:
+        fs.append({'title':'Usage',
+                   'body':(f'`!{al_name} config (track|notrack) (-dc dc) (reset)`\n'
+                           f'* `track|notrack`: to track or not track arrow counters (default: track)\n'
+                           f'* `-dc dc`: to specify custom expression for the arrow DC (default: '
+                           f'`8+proficiencyBonus+dexterityMod`)\n'
+                           f'* `reset`: to reset all values to default values'),
+                   })
+    if k_args['track'] > 0:
+        track = True
+    if k_args['notrack'] > 0:
+        track = False
+    default_config = {
+            'track': True,
+            'dc': '8+proficiencyBonus+dexterityMod',
+            }
+    has_update = False
+    if k_args['reset']:
+        current_config = default_config
+        has_update = True
+    else:
+        current_config = load_json(ch.get_cvar(config_cvar_name, dump_json(default_config)))
+        if k_args['track'] or k_args['notrack']:
+            current_config['track'] = track
+            has_update = True
+        if k_args['-dc']:
+            current_config['dc'] = k_args['-dc'][0]
+            has_update = True
+    ch.set_cvar(config_cvar_name, dump_json(current_config))
+    config_s = '\n* '.join(['']+[f'{key}: {value}' for key, value in current_config.items()])
+    desc = f'Your current configuration:{config_s}'
+    return jh.embed(
+        title=f'{ch.name} {"updates" if has_update else "checks"} their !{al_name} config',
+        desc=desc,
+        fields=fs,
+        )
 
-# Check if counter exists
-if not character().cc_exists(counter_name):
-    err(f'No "{counter_name}" counter found. Use `!cc create "{counter_name}" -max <amount>` to create one.')
+if not co or not co.me:
+    return jh.embed(
+        title=f'{ch.name} is not in combat! :x:',
+        desc=(f'This expanded arrow alias requires your character to be in init.\n\n'
+              f'If you want to run it for the current active combatant, use `!iarrow` instead.\n\n'
+              f'If it is for an off-turn attack, use `!rarrow combatantName` instead.'),
+        )
+target = co.me
+k_args, l_args = jh.take_args(args, {'nodmg':False})
+if len(l_args) < 1:
+    return jh.embed(
+        title='No weapon name specified! :x:',
+        desc=(f'You need to specify the weapon name, like so:\n'
+              f'`!{al_name} weaponName arrowType <usual attack args>'),
+        )
+weapon_name = l_args[0]
+if len(l_args) < 2:
+    return jh.embed(
+        title='No arrow type specified! :x:',
+        desc=(f'You need to specify the arrow name, like so:\n'
+              f'`!{al_name} weaponName arrowType <usual attack args>'),
+        )
+arrow_type = l_args[1]
+nodmg = bool(k_args['nodmg'])
 
-# Check if we have arrows
-if character().get_cc(counter_name) <= 0:
-    err(f"You have no {counter_name} remaining!")
+arrow_eff_name = 'Expanded Arrow Alias Temporary Effect'
+target.remove_effect(arrow_eff_name)
 
-# Use an arrow
-character().mod_cc(counter_name, -1)
-remaining = character().get_cc(counter_name)
+(raw, att_args), myerr = wmodlib.inject_arrow(target, weapon_name, arrow_type=arrow_type, nodmg=nodmg, sels=sels)
+if myerr:
+    if myerr.code == wmodlib.ERR.AMBIGUOUS:
+        argprompt.save(args)
+    return myerr.msg
 
-# Track fired arrows if tracking is enabled
-track_shots = get_svar('trackShots') or get('trackShots')
-if track_shots:
-    character().create_cc_nx(fired_counter, 0)
-    character().mod_cc(fired_counter, 1)
-
-# Get attack modifiers
-attack_stat = get('dexterityMod', 0) if get('rangedattackstat', 'dex').lower() in ['dex', 'dexterity'] else get('strengthMod', 0)
-prof_bonus = proficiencyBonus
-
-# Build the attack command
-if arrow_type == "magefire":
-    # Magefire: adds 1d6 fire damage
-    extra_args = f'-d "1d6 [fire]" -f "Magefire Arrow|Deals an extra 1d6 fire damage. ({remaining} remaining)"'
-elif arrow_type == "ice":
-    # Ice: removes base damage, forces Con save
-    save_dc = 8 + prof_bonus + attack_stat
-
-    # Create a temporary attack automation for ice arrow
-    automation_json = f'''{{
-        "name": "Ice Arrow Special",
-        "automation": [
-            {{
-                "type": "target",
-                "target": "each",
-                "effects": [
-                    {{
-                        "type": "damage",
-                        "damage": "0"
-                    }},
-                    {{
-                        "type": "save",
-                        "stat": "con",
-                        "dc": "{save_dc}",
-                        "fail": [
-                            {{
-                                "type": "ieffect",
-                                "name": "Slowed by Ice",
-                                "duration": 1,
-                                "effects": "-10 feet movement",
-                                "desc": "Your movement is reduced by 10 feet until the end of the attacker's next turn."
-                            }}
-                        ]
-                    }}
-                ]
-            }}
+target.add_effect(arrow_eff_name, attacks=[raw])
+args_s = ' '.join(f'"{escape(arg)}"' for arg in l_args[2:])
+cmds = [f'multiline',
+        f'!a "{escape(raw.attack.name)}" {att_args} {args_s}',
+        f'!i re "{escape(target.name)}" "{arrow_eff_name}"',
         ]
-    }}'''
-
-    # Store the automation temporarily and use "Ice Arrow" as weapon name
-    set_uvar("temp_ice_automation", automation_json)
-    weapon = "Ice Arrow Special"
-    extra_args = f'-f "Ice Arrow Effect|Using ice arrow with Constitution save DC {save_dc}. ({remaining} remaining)"'
-
-# Set up command parts
-cmd_parts = [weapon]
-if target:
-    cmd_parts.extend(["-t", target])
-cmd_parts.append(extra_args)
-
-out = " ".join(cmd_parts)
+return '\n'.join(cmds)
 </drac2>
-attack {{out}}
