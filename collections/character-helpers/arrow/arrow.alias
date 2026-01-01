@@ -30,9 +30,8 @@ def escape(s):
 # Alias begins here
 if not args or args[0] in ['?', 'h', 'help']:
     return jh.embed(
-        title=f'Alias Manual for Expanded Arrows (ER)',
-        desc=(f'Shoots arrows with your existing weapon, automating [Enter Ravenloft '
-              f'Expanded Arrow](https://drive.google.com/file/d/1oThtDdGdEc5Z1VUDzjnymeXpj0W06a1N/view).\n'
+        title=f'Alias Manual for Expanded Arrows',
+        desc=(f'Shoots arrows with your existing weapon, automating Expanded Arrows.\n'
               f'Use this to replace the initial `!a` in your attack, keeping the rest the same.\n'
               f'So to attack a hexed Goblin with a Blinding Arrow from your Shortbow +1, you can do:\n'
               f'`!{al_name} "Shortbow +1" blind -t go hex`'),
@@ -55,16 +54,10 @@ if not args or args[0] in ['?', 'h', 'help']:
                          )},
                 {'title':'Arrow Management',
                  'body':(f'This alias uses custom counters (CCs) to track the arrows you have, as well as the arrows '
-                         f'you have used (for `!collect` purposes). To set the CCs, you can use the following '
-                         f'alternatives:\n'
-                         f'* `!quiver setup <arrow type> <arrow type> ... (nostore)`\n'
-                         f'  The recommended way. It sets up the CCs for the specified arrow types.\n'
-                         f'  The `nostore` optional argument skips making the Stored arrows CCs.\n'
-                         f'  For example, to create the required CCs for these four arrow types:\n'
-                         f'> `!quiver setup fire explosive blinding cork`\n'
+                         f'you have used (for `!collect` purposes).\n'
                          f'* Make your own CCs\n'
-                         f'  Make one for each arrow type, With the name same as the arrow type, and another one with '
-                         f' "Used" in front (e.g., "Used Corkscrew Arrows") to track the used ones to recover.\n'
+                         f'  Make one for each arrow type, with the name same as the arrow type, and another one with '
+                         f'"Used" in front (e.g., "Used Corkscrew Arrows") to track the used ones to recover.\n'
                          f'  Some arrows cannot be recovered, in those cases, no need to make the Used counter.\n'
                          f'* Opt out of arrow management\n'
                          f'  You can opt out of arrow management by doing the following:\n'
@@ -98,7 +91,7 @@ if args[0] == 'list':
         arrow_s.append(arrow_disp)
     arrow_s = '\n* '.join(['']+arrow_s)
     return jh.embed(
-        title='List of Expanded Arrows (ER)',
+        title='List of Expanded Arrows',
         desc=(f'The underlined part will be recognized as the full name of the arrows as well.\n'
               f'In brackets, "½" means recover half, "½ miss" means recover half only on miss, and :magic_wand: means '
               f'magical.{arrow_s}'
