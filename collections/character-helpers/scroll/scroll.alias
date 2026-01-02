@@ -6,19 +6,23 @@ footer = f'!{al_name} | Alias by @silverbass#2407'
 g = load_json(get_gvar("7bc1042b-a670-47ce-afc0-4e78716772ee"))
 spells = g.spells
 
-# Get spell name from args
-spname = "&1&"
+# Get args
 args = &ARGS&
+spname = args[0] if args else ""
 
 # Find matching spell (exact match first, then partial match)
-matches = [x for x in spells if spname.lower() == x.name.lower()]
+matches = [x for x in spells if spname and spname.lower() == x.name.lower()]
 if not matches:
-    matches = [x for x in spells if spname.lower() in x.name.lower()]
+    matches = [x for x in spells if spname and spname.lower() in x.name.lower()]
 scroll = matches[0] if matches else None
 
 # Show help if no spell specified
-if not scroll:
+if not spname:
     return f'embed -color {color} -thumb {image} -title "Spell Scroll" -desc "Using a Scroll: `!{al_name} [spell name]` - Accepts all the same args as `!cast`\n\n**2024 Rules:**\n• Spell must be on your spell list to use\n• If higher level than you can cast, roll DC 10 + spell level\n• On failure, scroll is consumed with no effect" -footer "{footer}"'
+
+# Spell not found
+if not scroll:
+    return f'embed -color {color} -thumb {image} -title "Spell Not Found" -desc "Could not find a spell matching **{spname}** in the spell scroll database." -footer "{footer}"'
 
 # 2024 Spell Scroll tables by spell level (0-9)
 dc_table = [13, 13, 13, 15, 15, 17, 17, 18, 18, 19]
