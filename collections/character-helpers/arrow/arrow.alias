@@ -115,7 +115,6 @@ def _argprompt_get_metadata():
 
 def argprompt_handle(args):
     """Process args, return (args, sels) for disambiguation."""
-    global _argprompt_sels
     now = _argprompt_now
     metadata = _argprompt_get_metadata()
 
