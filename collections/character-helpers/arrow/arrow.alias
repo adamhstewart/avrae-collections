@@ -2,34 +2,582 @@
 al_name = 'arrow'
 footer = f'!{al_name} ? | Shoot special arrows with your bows!'
 
-using(jh='65a30ab9-540c-4bdf-86ce-7af4760604a9')
-using(wmodlib='3ca2e3aa-f3e6-4efe-bee8-eaaedaef6f7d')
-using(argprompt='f3dfc147-7804-4ade-ac94-01038f706fc8')
-jh.setup(
-        al_name=al_name,
-        footer=footer,
-        )
-wmodlib.setup(
-        al_name=al_name,
-        prompt_ambiguous=True,
-        )
-argprompt.setup(
-        cvar_name='arrowMetadata',
-        timeout=30,
-        )
-
 ch = character()
 co = combat()
 
-args, sels = argprompt.handle(&ARGS&)
-p_args = argparse(args)
+# ============================================================================
+# HELPER: Simple embed output (replaces jh.embed + emb.get_output)
+# ============================================================================
+def _escape_arg(s):
+    """Escape a string for use as an embed argument."""
+    if s is None:
+        return ''
+    return str(s).replace('"', '\\"').replace('\n', '\n')
 
+def _field_to_arg(field):
+    """Convert a field dict to embed -f argument format."""
+    title = field.get('title', '\u200c') or '\u200c'
+    body = field.get('body', '\u200c') or '\u200c'
+    inline = '|inline' if field.get('inline') else ''
+    return f'{title}|{body}{inline}'
+
+def embed(title=None, desc='', fields=[], f_footer=True, f_color=True, f_thumb=True):
+    """Output an embed string with automatic footer, color, and thumbnail."""
+    ch_color = ch.csettings.get('color', None)
+    if ch_color is not None:
+        ch_color = f'#{ch_color:X}'
+    else:
+        ch_color = ''
+    ch_image = ch.image
+
+    if title is None:
+        title = f'{ch.name} uses !{al_name}'
+
+    parts = ['embed']
+    parts.append(f'-title "{_escape_arg(title)}"')
+    if desc:
+        parts.append(f'-desc "{_escape_arg(desc)}"')
+
+    for field in [f for f in fields if f is not None]:
+        parts.append(f'-f "{_escape_arg(_field_to_arg(field))}"')
+
+    if f_footer:
+        f_text = f_footer if typeof(f_footer) == 'str' else footer
+        parts.append(f'-footer "{_escape_arg(f_text)}"')
+
+    if f_color and ch_color:
+        c_text = f_color if typeof(f_color) == 'str' else ch_color
+        parts.append(f'-color "{_escape_arg(c_text)}"')
+
+    if f_thumb:
+        t_text = f_thumb if typeof(f_thumb) == 'str' else ch_image
+        parts.append(f'-thumb "{_escape_arg(t_text)}"')
+
+    return ' '.join(parts)
+
+# ============================================================================
+# HELPER: Argument parsing (from jh.take_args)
+# ============================================================================
+def take_args(args, keys={}):
+    """Parse keyword arguments from a list.
+
+    Returns (key_args, leftover) where key_args maps arg names to values/counts.
+    """
+    args = list(args)  # Make a copy
+    key_args = {}
+    idx = 0
+    while idx < len(args):
+        arg = args[idx]
+        if arg not in keys:
+            idx += 1
+            continue
+        if keys[arg]:
+            if arg not in key_args:
+                key_args[arg] = []
+            if idx+1 < len(args):
+                if keys[arg] == True or args[idx+1].startswith(keys[arg]):
+                    key_args[arg].append(args[idx+1])
+                else:
+                    key_args[arg].append(True)
+                args = args[:idx]+args[idx+2:]
+            else:
+                key_args[arg].append(True)
+                args = args[:idx]
+        else:
+            if arg not in key_args:
+                key_args[arg] = 0
+            key_args[arg] += 1
+            args = args[:idx]+args[idx+1:]
+    for k, v in keys.items():
+        if k not in key_args:
+            if v == False:
+                key_args[k] = 0
+            else:
+                key_args[k] = []
+    return (key_args, args)
+
+# ============================================================================
+# HELPER: Argument prompting (from argprompt)
+# ============================================================================
+_argprompt_cvar_name = 'arrowMetadata'
+_argprompt_timeout = 30
+_argprompt_now = time()
+_argprompt_channel_id = f'{ctx.guild.id}/{ctx.channel.id}'
+_argprompt_sels = []
+
+def _argprompt_get_metadata():
+    metadata = {'pendingConfirmation': {}}
+    try:
+        metadata = load_json(ch.get_cvar(_argprompt_cvar_name, dump_json(metadata)))
+    except:
+        ch.set_cvar(_argprompt_cvar_name, dump_json(metadata))
+    return metadata
+
+def argprompt_handle(args):
+    """Process args, return (args, sels) for disambiguation."""
+    global _argprompt_sels
+    now = _argprompt_now
+    metadata = _argprompt_get_metadata()
+
+    # Clear expired entries
+    to_delete = set()
+    for channel_id, pending in metadata['pendingConfirmation'].items():
+        if now - pending.timestamp >= _argprompt_timeout:
+            to_delete.add(channel_id)
+    metadata['pendingConfirmation'] = {k:v for k,v in metadata['pendingConfirmation'].items() if k not in to_delete}
+    ch.set_cvar(_argprompt_cvar_name, dump_json(metadata))
+
+    channel_id = _argprompt_channel_id
+
+    # Check if current argument is a single number
+    if len(args) == 1 and args[0].isnumeric():
+        idx = int(args[0])-1
+    else:
+        idx = None
+
+    if channel_id in metadata['pendingConfirmation']:
+        pending = metadata['pendingConfirmation'][channel_id]
+        if idx is not None:
+            args = pending.args
+            _argprompt_sels.append(idx)
+            _argprompt_sels.extend(pending.sels)
+        if args:
+            metadata['pendingConfirmation'] = {k:v for k,v in metadata['pendingConfirmation'].items() if k != channel_id}
+            ch.set_cvar(_argprompt_cvar_name, dump_json(metadata))
+    else:
+        idx = None
+
+    return args, list(_argprompt_sels)
+
+def argprompt_save(args):
+    """Save args for later disambiguation."""
+    metadata = _argprompt_get_metadata()
+    metadata['pendingConfirmation'][_argprompt_channel_id] = {
+        'args': args,
+        'sels': _argprompt_sels,
+        'timestamp': _argprompt_now
+    }
+    ch.set_cvar(_argprompt_cvar_name, dump_json(metadata))
+
+# ============================================================================
+# WEAPON MODIFICATION: Arrow injection (from wmodlib)
+# ============================================================================
+_wmod_prompt_ambiguous = True
+
+ERR = {
+    'AMBIGUOUS': 1,
+    'NOMATCH': 2,
+    'INVALID': 3,
+}
+
+ARROW_TYPES = {}
+ARROW_ALIAS_MAP = {}
+
+def _produce_target_nodes(root):
+    output = []
+    for idx, eff in enumerate(root):
+        if eff.get('type', '') == 'target' and eff.get('target', '') in ['each', 'all']:
+            output.append((idx, eff, root))
+        elif eff.get('type', '') == 'condition':
+            eff['onTrue'] = [dict(v) for v in eff.get('onTrue', [])]
+            eff['onFalse'] = [dict(v) for v in eff.get('onFalse', [])]
+            output.extend(_produce_target_nodes(eff['onTrue']))
+            output.extend(_produce_target_nodes(eff['onFalse']))
+    return output
+
+def _produce_attack_nodes(root):
+    output = []
+    for idx, eff in enumerate(root):
+        if eff.get('type', '') == 'attack':
+            output.append((idx, eff, root))
+        elif eff.get('type', '') == 'condition':
+            eff['onTrue'] = [dict(v) for v in eff.get('onTrue', [])]
+            eff['onFalse'] = [dict(v) for v in eff.get('onFalse', [])]
+            output.extend(_produce_attack_nodes(eff['onTrue']))
+            output.extend(_produce_attack_nodes(eff['onFalse']))
+    return output
+
+def _produce_damage_nodes(root):
+    output = []
+    for idx, eff in enumerate(root):
+        if eff.get('type', '') == 'damage' and not eff.get('fixedValue', False):
+            output.append((idx, eff, root))
+        elif eff.get('type', '') == 'condition':
+            eff['onTrue'] = [dict(v) for v in eff.get('onTrue', [])]
+            eff['onFalse'] = [dict(v) for v in eff.get('onFalse', [])]
+            output.extend(_produce_damage_nodes(eff['onTrue']))
+            output.extend(_produce_damage_nodes(eff['onFalse']))
+    return output
+
+def _get_granting_effect(target, weapon_raw):
+    for eff in target.effects:
+        for attack in eff.attacks:
+            if attack.attack == weapon_raw:
+                return attack
+    return {}
+
+def _clone_attack_model(target, raw):
+    attack_model = {
+        'attack': raw,
+        'override_default_dc': None,
+        'override_default_attack_bonus': None,
+        'override_default_casting_mod': None,
+        'granting_spell_id': None,
+        'granting_spell_cast_level': None,
+        'original_choice': None,
+    }
+    granting_eff = _get_granting_effect(target, raw)
+    attack_model['override_default_dc'] = granting_eff.get('override_default_dc', None)
+    attack_model['override_default_attack_bonus'] = granting_eff.get('override_default_attack_bonus', None)
+    attack_model['override_default_casting_mod'] = granting_eff.get('override_default_casting_mod', None)
+    attack_model['granting_spell_id'] = granting_eff.get('granting_spell_id', None)
+    attack_model['granting_spell_cast_level'] = granting_eff.get('granting_spell_cast_level', None)
+    attack_model['original_choice'] = granting_eff.get('original_choice', None)
+    return attack_model
+
+def _get_attack(target, weapon_name, sels=[]):
+    """Returns ((matching_attack, target_with_that_attack), err)"""
+    is_group = target.type == 'group'
+    if is_group:
+        is_self = any(t == co.me for t in target.combatants)
+        attacks = [(att, t) for t in target.combatants for att in t.attacks]
+    else:
+        is_self = target == co.me
+        attacks = [(att, target) for att in target.attacks]
+
+    exact = []
+    matches = []
+    for att, t in attacks:
+        if weapon_name.lower() == att.raw.name.lower():
+            exact.append((att, t))
+        if weapon_name.lower() in att.raw.name.lower():
+            matches.append((att, t))
+    matches = exact or matches
+
+    if len(matches) > 1:
+        try:
+            idx = sels.pop()
+        except:
+            idx = None
+        if idx is not None and 0 <= idx < len(matches):
+            matches = [matches[idx]]
+        else:
+            if is_group:
+                names = [f'{att.raw.name} ({t.name})' for att, t in matches]
+            else:
+                names = [att.raw.name for att, t in matches]
+            fs = []
+            if _wmod_prompt_ambiguous:
+                fs.append({
+                    'title': 'Attack Selection',
+                    'body': (f'You can select one of the attacks above without resupplying other arguments by '
+                             f'typing ```!{al_name} <num>``` where <num> is the number next to the '
+                             f'attack above (between **1** and **{len(names)}**), for example '
+                             f'`!{al_name} 1`\n\n'
+                             f'To cancel or to use different arguments, simply redo the full arguments.'),
+                })
+                if idx is not None:
+                    fs.append({
+                        'title': 'Invalid Selection :x:',
+                        'body': f'Your selection: "{idx+1}" is outside the possible range.',
+                    })
+                names = [f'{idx+1}. {name}' for idx, name in enumerate(names)]
+                names_s = '\n'.join(['']+names)
+            else:
+                names_s = '\n* '.join(['']+names)
+            return ((None, None), {
+                'code': ERR['AMBIGUOUS'],
+                'msg': embed(
+                    title='Ambiguous Weapon Name :x:',
+                    desc=f'There are multiple weapons matching the name `{weapon_name}`:{names_s}',
+                    fields=fs,
+                    f_thumb=is_self,
+                ),
+            })
+    elif len(matches) == 0:
+        if is_group:
+            atts_s = '\n* '.join(['']+[f'{att.raw.name} ({t.name})' for att, t in attacks])
+        else:
+            atts_s = '\n* '.join(['']+[att.raw.name for att, t in attacks])
+        atts_s = f'\nYour attacks:{atts_s}' if is_self else ''
+        return ((None, None), {
+            'code': ERR['NOMATCH'],
+            'msg': embed(
+                title='No Weapon Matches :x:',
+                desc=f'There are no weapons matching the name `{weapon_name}`{atts_s}',
+                f_thumb=is_self,
+            ),
+        })
+    return matches[0], None
+
+def _load_arrows():
+    if not ARROW_TYPES:
+        try:
+            quiver_config = load_json(ch.get_cvar('quiverConfig', '{}'))
+        except:
+            quiver_config = {}
+        actual_arrow_types = quiver_config.get('arrow_types', {})
+
+        ARROW_TYPES.update(load_json(get_gvar("9c5a97b4-450c-441a-850e-466a7b510389")))
+        for arrow_type, arrow in list(ARROW_TYPES.items()):
+            bolt_type = arrow_type.replace('Arrow', 'Bolt')
+            ARROW_TYPES[bolt_type] = arrow
+            if bolt_type not in actual_arrow_types:
+                actual_arrow_type = arrow_type
+                actual_bolt_type = arrow_type
+            elif arrow_type not in actual_arrow_types:
+                actual_arrow_type = bolt_type
+                actual_bolt_type = bolt_type
+            else:
+                actual_arrow_type = arrow_type
+                actual_bolt_type = bolt_type
+            ARROW_ALIAS_MAP[arrow_type] = actual_arrow_type
+            ARROW_ALIAS_MAP[arrow_type.lower()] = actual_arrow_type
+            ARROW_ALIAS_MAP[bolt_type] = actual_bolt_type
+            ARROW_ALIAS_MAP[bolt_type.lower()] = actual_bolt_type
+            for alias in arrow['alias']:
+                ARROW_ALIAS_MAP[alias] = actual_arrow_type
+                ARROW_ALIAS_MAP[alias.lower()] = actual_arrow_type
+
+def _get_arrow(name, sels=[]):
+    _load_arrows()
+    cur_alias_map = ARROW_ALIAS_MAP
+    name = name.lower()
+    if name in cur_alias_map:
+        name = cur_alias_map[name]
+        return name, [name]
+    candidates = list(set(cur_alias_map[c] for c in cur_alias_map.keys() if name in c))
+    if len(candidates) == 0:
+        return None, []
+    elif len(candidates) == 1 or sels:
+        try:
+            idx = sels.pop()
+        except:
+            idx = 0
+        return candidates[idx], candidates
+    else:
+        return None, candidates
+
+def inject_arrow(target, weapon_name_or_model, arrow_type=None, nodmg=False, sels=[]):
+    """Inject arrow effects into a weapon attack. Returns ((attack_model, snippet), err)"""
+    if typeof(weapon_name_or_model) == 'str':
+        weapon_name = weapon_name_or_model
+        (weapon, target), myerr = _get_attack(target, weapon_name, sels=sels)
+        if myerr:
+            return (None, None), myerr
+    else:
+        weapon = weapon_name_or_model
+        weapon_name = weapon.raw.name
+
+    raw = dict(weapon.raw)
+
+    # Get the arrow
+    _load_arrows()
+    arrow, candidates = _get_arrow(arrow_type, sels=sels)
+    if not arrow:
+        if len(candidates) > 1:
+            try:
+                idx = sels.pop()
+            except:
+                idx = None
+            if idx is not None and 0 <= idx < len(candidates):
+                candidates = [candidates[idx]]
+                arrow_s = '\n* '.join(['']+candidates)
+            else:
+                fs = []
+                if _wmod_prompt_ambiguous:
+                    fs.append({
+                        'title': 'Arrow Selection',
+                        'body': (f'You can select one of the arrow types above without resupplying other arguments by '
+                                 f'typing `!{al_name} <num>`, where <num> is the number next to the '
+                                 f'arrow type above (between 1 and {len(candidates)})\n\n'
+                                 f'To cancel or to use different arguments, simply redo the full arguments.'),
+                    })
+                    if idx is not None:
+                        fs.append({
+                            'title': 'Invalid Selection :x:',
+                            'body': f'Your selection: "{idx+1}" is outside the possible range.',
+                        })
+                    names = [f'{idx+1}. {name}' for idx, name in enumerate(candidates)]
+                    arrow_s = '\n'.join(['']+names)
+                else:
+                    arrow_s = '\n* '.join(['']+candidates)
+                return ((None, None), {
+                    'code': ERR['AMBIGUOUS'],
+                    'msg': embed(
+                        title='Ambiguous Arrow Type :x:',
+                        desc=f'There are multiple arrow types matching the name `{arrow_type}`:{arrow_s}',
+                        fields=fs,
+                        f_thumb=target == co.me,
+                    ),
+                })
+            return ((None, None), {
+                'code': ERR['AMBIGUOUS'],
+                'msg': embed(
+                    title=f'Ambiguous Arrow Type :x:',
+                    desc=f'There are multiple arrow types matching `{arrow_type}`:{arrow_s}',
+                    f_thumb=target == co.me,
+                ),
+            })
+        else:
+            return ((None, None), {
+                'code': ERR['NOMATCH'],
+                'msg': embed(
+                    title='No Arrow Matches :x:',
+                    desc=f'There are no arrow type matching the name `{arrow_type}`',
+                    f_thumb=target == co.me,
+                ),
+            })
+
+    attack_model = _clone_attack_model(target, raw)
+
+    if arrow_type is None:
+        return (attack_model, ''), None
+
+    arrow_data = ARROW_TYPES[arrow]
+    magical = arrow_data.get('magical', False)
+    recover = arrow_data.get('recover', 'none')
+    arrow_desc = arrow_data.get('desc', '')
+    arrow_att = arrow_data.get('attack', {})
+
+    arrow_dc_varname = 'arrowDC'
+    default_arrow_dc = '8 + proficiencyBonus + dexterityMod'
+    if target == co.me:
+        arrow_config = load_json(ch.get_cvar('arrowConfig', '{}'))
+        arrow_dc = arrow_config.get('dc', default_arrow_dc) or default_arrow_dc
+        arrow_track = arrow_config.get('track', True)
+    else:
+        arrow_dc = default_arrow_dc
+        arrow_track = False
+
+    arrow_set_dc = {"type": "variable", "name": arrow_dc_varname, "value": arrow_dc, "onError": default_arrow_dc}
+    arrow_set_track = {"type": "variable", "name": "arrow_track", "value": int(arrow_track), "onError": 1}
+    arrow_use_counter_spend = [{"type": "counter", "counter": arrow, "amount": 1, "allowOverflow": False, "errorBehavior": "warn"}]
+    arrow_use_counter_recover = [{"type": "counter", "counter": f'Used {arrow}', "amount": -1, "allowOverflow": False, "errorBehavior": "warn"}]
+
+    arrow_text_auto = {"type": "text", "text": arrow_desc, "title": arrow}
+    after_init = arrow_att.get('after_init', [])
+    after_damage = arrow_att.get('after_damage', [])
+    after_attack = arrow_att.get('after_attack', [])
+    after_first_target = arrow_att.get('after_first_target', [])
+    after_target = arrow_att.get('after_target', [])
+    after_text = arrow_att.get('after_text', [])
+    snippet = arrow_att.get('snippet', '')
+    arrow_nodmg = arrow_att.get('nodmg', False)
+    arrow_noattack = arrow_att.get('noattack', False)
+    attack_adv = arrow_att.get('attack_adv', 0)
+    multitarget = arrow_att.get('multitarget', False)
+
+    success = False
+    if raw.get('automation', []):
+        raw['automation'] = [arrow_set_dc, arrow_set_track]+after_init+[dict(v) for v in raw['automation']]
+        target_nodes = _produce_target_nodes(raw['automation'])
+        for _, target_node, target_node_parent in target_nodes:
+            target_success = False
+            if target_node.get('type', '') == 'target' and target_node.get('target', '') in ['each', 'all']:
+                target_node['effects'] = [dict(v) for v in target_node.get('effects', [])]
+                attack_nodes = _produce_attack_nodes(target_node['effects'])
+                for attack_node_idx, attack_node, attack_node_parent in attack_nodes:
+                    attack_success = False
+                    if attack_node.get('type', '') == 'attack':
+                        attack_node['hit'] = [dict(v) for v in attack_node.get('hit', [])]
+                        damage_nodes = _produce_damage_nodes(attack_node['hit'])
+                        for damage_node_idx, damage_node, damage_node_parent in damage_nodes:
+                            if damage_node.get('type', '') == 'damage' and not damage_node.get('fixedValue', False):
+                                target_success = True
+                                attack_success = True
+                                success = True
+                                if nodmg or arrow_nodmg:
+                                    if arrow_nodmg:
+                                        damage_node['damage'] = '0 [noarrowdmg]'
+                                    else:
+                                        damage_node['damage'] = '0 [nodmg]'
+                                    damage_node['fixedValue'] = True
+                                if after_damage:
+                                    damage_node_idx = damage_node_parent.index(damage_node)
+                                    damage_node_parent[damage_node_idx+1:damage_node_idx+1] = after_damage
+                    if attack_success:
+                        if attack_adv:
+                            old_adv = attack_node.get('adv', 0)
+                            new_adv = min(1, attack_adv) + min(1, old_adv)
+                            new_adv = max(-1, min(1, new_adv))
+                            if new_adv == 1 and (attack_adv == 2 or old_adv == 2):
+                                new_adv = 2
+                            attack_node['adv'] = new_adv
+                        if after_attack:
+                            attack_node_idx = attack_node_parent.index(attack_node)
+                            attack_node_parent[attack_node_idx+1:attack_node_idx+1] = after_attack
+                        if recover == 'halfmiss' and arrow_track:
+                            attack_node['miss'] = [dict(v) for v in attack_node.get('miss', [])]
+                            attack_node['miss'][0:0] = arrow_use_counter_recover
+                        if arrow_noattack:
+                            attack_node_idx = attack_node_parent.index(attack_node)
+                            attack_node_parent[attack_node_idx:attack_node_idx+1] = []
+            if target_success:
+                if after_first_target:
+                    new_target_node = {
+                        "type": "condition",
+                        "condition": "lastAttackDidHit",
+                        "onTrue": after_first_target,
+                        "onFalse": [],
+                    }
+                    target_node_idx = target_node_parent.index(target_node)
+                    target_node_parent[target_node_idx+1:target_node_idx+1] = [new_target_node]
+                    target_node['target'] = '1'
+                if arrow_track:
+                    if recover == 'half':
+                        arrow_use_counter = arrow_use_counter_spend+arrow_use_counter_recover
+                    else:
+                        arrow_use_counter = arrow_use_counter_spend
+                    if multitarget:
+                        target_node['effects'][0:0] = [{
+                            'type': 'condition',
+                            'condition': 'targetIndex == 1',
+                            'onTrue': arrow_use_counter,
+                            'onFalse': [],
+                        }]
+                    else:
+                        target_node['effects'][0:0] = arrow_use_counter
+
+        if success:
+            if arrow_desc:
+                raw['automation'].append(arrow_text_auto)
+            if after_text:
+                raw['automation'].extend(after_text)
+            proper = raw.get('proper', False)
+            if not proper:
+                prefix = 'an ' if raw['name'][0].lower() in 'aeiou' else 'a '
+            else:
+                prefix = ''
+            raw['proper'] = False
+            arrow_name = arrow.replace('Arrows', 'Arrow').replace('Piercers', 'Piercer')
+            raw['name'] = f'{arrow_name} with {prefix}{raw.name}'
+            raw['verb'] = 'shoots'
+
+    if success:
+        return (attack_model, snippet), None
+    else:
+        return ((None, None), {
+            'code': ERR['INVALID'],
+            'msg': embed(
+                title='Ineligible Weapon :x:',
+                desc=f'The specified attack `{weapon_name}` is not an eligible weapon attack!',
+                f_thumb=target == co.me,
+            ),
+        })
+
+# ============================================================================
+# MAIN ALIAS LOGIC
+# ============================================================================
 def escape(s):
     return s.replace('"', '\\"')
 
-# Alias begins here
+args, sels = argprompt_handle(&ARGS&)
+p_args = argparse(args)
+
+# Help command
 if not args or args[0] in ['?', 'h', 'help']:
-    return jh.embed(
+    return embed(
         title=f'Alias Manual for Expanded Arrows',
         desc=(f'Shoots arrows with your existing weapon, automating Expanded Arrows.\n'
               f'Use this to replace the initial `!a` in your attack, keeping the rest the same.\n'
@@ -65,15 +613,11 @@ if not args or args[0] in ['?', 'h', 'help']:
                          f'* __Stock Check__. You can check your arrows using the server `!hud` alias:\n'
                          f'> `!hud`'
                          )},
-                {'title':'See Also',
-                 'body':(f'* `!{al_name}` for current active character\n'
-                         f'* ~~`!iarrow` for current combatant~~ (coming soon!)\n'
-                         f'* ~~`!rarrow` for off-turn combatant~~ (coming soon!)\n\n'
-                         f'Designed to be similar to `!a`, `!i a`, and `!i oa`'
-                         )},
                  ],
         f_thumb=False,
         )
+
+# List command
 if args[0] == 'list':
     arrow_types = load_json(get_gvar("9c5a97b4-450c-441a-850e-466a7b510389"))
     arrow_s = []
@@ -90,7 +634,7 @@ if args[0] == 'list':
             arrow_disp = f'{arrow_disp} ({", ".join(props)})'
         arrow_s.append(arrow_disp)
     arrow_s = '\n* '.join(['']+arrow_s)
-    return jh.embed(
+    return embed(
         title='List of Expanded Arrows',
         desc=(f'The underlined part will be recognized as the full name of the arrows as well.\n'
               f'In brackets, "½" means recover half, "½ miss" means recover half only on miss, and :magic_wand: means '
@@ -99,10 +643,11 @@ if args[0] == 'list':
         f_thumb=False,
         )
 
+# Config command
 config_cvar_name = 'arrowConfig'
 if args[0] == 'config':
     fs = []
-    k_args, l_args = jh.take_args(args, {'notrack':False, 'track':False, '-dc':True, 'reset':False})
+    k_args, l_args = take_args(args, {'notrack':False, 'track':False, '-dc':True, 'reset':False})
     if len(args) == 1:
         fs.append({'title':'Usage',
                    'body':(f'`!{al_name} config (track|notrack) (-dc dc) (reset)`\n'
@@ -134,30 +679,32 @@ if args[0] == 'config':
     ch.set_cvar(config_cvar_name, dump_json(current_config))
     config_s = '\n* '.join(['']+[f'{key}: {value}' for key, value in current_config.items()])
     desc = f'Your current configuration:{config_s}'
-    return jh.embed(
+    return embed(
         title=f'{ch.name} {"updates" if has_update else "checks"} their !{al_name} config',
         desc=desc,
         fields=fs,
         )
 
+# Combat check
 if not co or not co.me:
-    return jh.embed(
+    return embed(
         title=f'{ch.name} is not in combat! :x:',
-        desc=(f'This expanded arrow alias requires your character to be in init.\n\n'
-              f'If you want to run it for the current active combatant, use `!iarrow` instead.\n\n'
-              f'If it is for an off-turn attack, use `!rarrow combatantName` instead.'),
+        desc=f'This expanded arrow alias requires your character to be in init.',
         )
+
 target = co.me
-k_args, l_args = jh.take_args(args, {'nodmg':False})
+k_args, l_args = take_args(args, {'nodmg':False})
+
 if len(l_args) < 1:
-    return jh.embed(
+    return embed(
         title='No weapon name specified! :x:',
         desc=(f'You need to specify the weapon name, like so:\n'
               f'`!{al_name} weaponName arrowType <usual attack args>'),
         )
 weapon_name = l_args[0]
+
 if len(l_args) < 2:
-    return jh.embed(
+    return embed(
         title='No arrow type specified! :x:',
         desc=(f'You need to specify the arrow name, like so:\n'
               f'`!{al_name} weaponName arrowType <usual attack args>'),
@@ -168,10 +715,10 @@ nodmg = bool(k_args['nodmg'])
 arrow_eff_name = 'Expanded Arrow Alias Temporary Effect'
 target.remove_effect(arrow_eff_name)
 
-(raw, att_args), myerr = wmodlib.inject_arrow(target, weapon_name, arrow_type=arrow_type, nodmg=nodmg, sels=sels)
+(raw, att_args), myerr = inject_arrow(target, weapon_name, arrow_type=arrow_type, nodmg=nodmg, sels=sels)
 if myerr:
-    if myerr.code == wmodlib.ERR.AMBIGUOUS:
-        argprompt.save(args)
+    if myerr.code == ERR['AMBIGUOUS']:
+        argprompt_save(args)
     return myerr.msg
 
 target.add_effect(arrow_eff_name, attacks=[raw])
